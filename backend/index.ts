@@ -7,6 +7,9 @@ io.on("connection", socket => {
   const id = uuid.v4();
   socket.on("mouse", event => {
     const { x, y } = event;
-    socket.broadcast.emit("mouse", { x, y, id });
+    socket.broadcast.volatile.emit("mouse", { x, y, id });
+  });
+  socket.on("disconnect", () => {
+    socket.broadcast.emit("remove", { id });
   });
 });
