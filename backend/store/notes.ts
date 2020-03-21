@@ -1,4 +1,7 @@
-const generateRandomColor = () =>
+import * as uuid from "uuid";
+import { Note } from "../interface";
+
+export const generateRandomColor = () =>
   "#" +
   Math.random()
     .toString(16)

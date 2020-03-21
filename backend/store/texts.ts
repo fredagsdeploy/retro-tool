@@ -1,5 +1,8 @@
+import * as uuid from "uuid";
+import { generateRandomColor } from "./notes";
+import { Text } from "../interface";
+
 export const createTextsStore = () => {
-  let largestZ = 0;
   const texts = new Map<string, Text>();
 
   const updateText = (
@@ -14,8 +17,7 @@ export const createTextsStore = () => {
 
     const newText: Text = {
       ...oldText,
-      ...newParams,
-      z: largestZ++
+      ...newParams
     };
 
     texts.set(id, newText);
@@ -23,7 +25,11 @@ export const createTextsStore = () => {
     return newText;
   };
 
-  const createText = ({ x, y, content }: Pick<Text, "x" | "y" | "content">) => {
+  const createText = ({
+    x,
+    y,
+    content
+  }: Pick<Text, "x" | "y" | "content" | "color">) => {
     const id = uuid.v4();
 
     const newText: Text = {
@@ -31,8 +37,7 @@ export const createTextsStore = () => {
       color: generateRandomColor(),
       id,
       x,
-      y,
-      z: largestZ++
+      y
     };
 
     texts.set(id, newText);

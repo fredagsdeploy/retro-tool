@@ -15,10 +15,10 @@ const texts = createTextsStore();
 const generateUniqueName = () => {
   let name = "";
   do {
-    if (usedNames.size === names.length) {
+    if (usedNames.size === allNames.length) {
       usedNames.clear();
     }
-    name = sample(names)!;
+    name = sample(allNames)!;
   } while (usedNames.has(name));
   usedNames.add(name);
   return name;
@@ -33,58 +33,38 @@ io.on("connection", socket => {
     socket.broadcast.volatile.emit("mouse", { x, y, id, name });
   });
 
-  socket.on("create-text", event => {
-    const id = uuid.v4();
-    const { x, y, color, content } = event;
-
-    const newText: Text = {
-      id,
-      x,
-      y,
-      content,
-      color
-    };
-    texts.set(id, newText);
+  socket.on("create-text", (event: Text) => {
+    const newText = texts.createText(event);
     io.emit("update-text", newText);
   });
 
   socket.on("update-text-content", (updatedText: Text) => {
-    texts.set(updatedText.id, updatedText);
-    io.emit("update-text", updatedText);
+    const newText = texts.updateText(updatedText.id, updatedText);
+    if (newText) {
+      io.emit("update-text", newText);
+    }
   });
 
-  socket.on("create-note", (event: Partial<Note>) => {
-    const { x, y } = event;
-
+  socket.on("create-note", (event: Note) => {
     const newNote = notes.createNote({
       content: `crap\n // ${name} `,
-      x,
-      y
+      ...event
     });
-
     io.emit("update-note", newNote);
   });
 
-  socket.on("move-note", event => {
-    const { id, x, y } = event;
+  socket.on("move-note", ({ id, x, y }: Note) => {
     const newNote = notes.updateNote(id, { x, y });
-
-    if (!newNote) {
-      return;
+    if (newNote) {
+      socket.broadcast.volatile.emit("update-note", newNote);
     }
-
-    socket.broadcast.volatile.emit("update-note", newNote);
   });
 
-  socket.on("drop-note", event => {
-    const { id, x, y } = event;
+  socket.on("drop-note", ({ id, x, y }: Note) => {
     const newNote = notes.updateNote(id, { x, y });
-
-    if (!newNote) {
-      return;
+    if (newNote) {
+      io.emit("update-note", newNote);
     }
-
-    io.emit("update-note", newNote);
   });
 
   socket.on("disconnect", () => {
