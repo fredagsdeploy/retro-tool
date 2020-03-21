@@ -3,6 +3,8 @@ import Draggable from "react-draggable";
 import { DraggableData } from "react-draggable";
 import { FaCheck, FaTrash } from "react-icons/fa";
 import { Text } from "../backend/interface";
+import tinycolor from "tinycolor2";
+import styled from "styled-components";
 
 export interface NewTextData {
   x: number;
@@ -70,8 +72,6 @@ const InputTextField = ({ done, cancel, style }: InputTextFieldProps) => {
 export const AddText = ({ socket }: AddTextProps) => {
   const [pos, setPos] = useState<{ x: number; y: number } | null>(null);
 
-  console.log(pos);
-
   return (
     <>
       {pos && (
@@ -97,35 +97,38 @@ export const AddText = ({ socket }: AddTextProps) => {
           }}
         />
       )}
-      <span
-        style={{
-          position: "absolute",
-          left: "50%",
-          top: "50%",
-          fontSize: "72px",
-          fontFamily: "Times"
-        }}
-      >
-        T
-      </span>
+      {TheT}
       <Draggable
+        onStart={() => {
+          setPos(null);
+        }}
         onStop={(e: any) => {
           setPos({ x: e.pageX, y: e.pageY });
         }}
         position={{ x: 0, y: 0 }}
       >
-        <span
-          style={{
-            position: "absolute",
-            left: "50%",
-            top: "50%",
-            fontSize: "72px",
-            fontFamily: "Times"
-          }}
-        >
-          T
-        </span>
+        {TheT}
       </Draggable>
     </>
   );
 };
+
+const StyledT = styled.span`
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  font-size: 72px;
+  font-family: Times;
+  color: ${tinycolor("#222").isLight() ? "black" : "white"};
+
+  user-select: none;
+
+  :hover {
+    cursor: grab;
+  }
+  :active {
+    cursor: grabbing;
+  }
+`;
+
+const TheT = <StyledT>T</StyledT>;

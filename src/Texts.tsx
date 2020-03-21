@@ -20,17 +20,8 @@ const TextsDiv = styled.div`
   font-size: 30px;
 `;
 
-const initialTextState: Record<string, Text> = {
-  text1: {
-    content: "Hello my peepedipoops",
-    id: "text1",
-    x: 200,
-    y: 50
-  }
-};
-
 export const Texts: React.FC<TextsProps> = ({ socket }) => {
-  const [texts, setTexts] = useState<Record<string, Text>>(initialTextState);
+  const [texts, setTexts] = useState<Record<string, Text>>({});
 
   useEffect(() => {
     socket.on("update-text", ({ id, x, y, ...rest }: Text) => {

@@ -50,7 +50,7 @@ export const App: React.FC<Props> = () => {
 
   return (
     <div>
-      <NoteBlock />
+      <NoteBlock socket={socketRef.current} />
       <AddText socket={socketRef.current} />
       <Notes socket={socketRef.current} />
       <Texts socket={socketRef.current} />

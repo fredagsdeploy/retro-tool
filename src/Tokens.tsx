@@ -29,10 +29,10 @@ const TokensDiv = styled.div<TokensDivProps>`
   height: 44px;
   border-radius: 50%;
   :hover {
-    cursor: move;
+    cursor: grab;
   }
   :active {
-    cursor: grab;
+    cursor: grabbing;
   }
 `;
 

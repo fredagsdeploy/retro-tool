@@ -68,18 +68,6 @@ export const Notes: React.FC<NotesProps> = ({ socket }) => {
         }
       }));
     });
-
-    const handler = (event: any) => {
-      socket.emit("create-note", {
-        x: event.pageX / window.innerWidth,
-        y: event.pageY / window.innerHeight
-      });
-    };
-    window.addEventListener("dblclick", handler);
-
-    return () => {
-      window.removeEventListener("dblclick", handler);
-    };
   }, [socket]);
 
   const handleDrag = useCallback(
