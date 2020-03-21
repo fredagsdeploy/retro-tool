@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
+import tinycolor from "tinycolor2";
 
 export interface Text {
   content: string;
@@ -9,30 +10,57 @@ export interface Text {
 }
 
 interface TextsProps {
-  texts: Record<string, Text>;
   socket: SocketIOClient.Socket;
 }
 
-interface TextsDivProps {
-  x: number;
-  y: number;
-}
-
-const TextsDiv = styled.div<TextsDivProps>`
+const TextsDiv = styled.div`
   position: absolute;
-  top: ${(props: TextsDivProps) => props.y}px;
-  left: ${(props: TextsDivProps) => props.x}px;
-  color: #333;
+  color: ${tinycolor("#222").isLight() ? "#333" : "#eee"};
   font-family: "Patrick Hand", cursive;
   font-size: 30px;
 `;
 
-export const Texts: React.FC<TextsProps> = ({ texts }) => (
-  <>
-    {Object.values(texts).map(text => (
-      <TextsDiv key={text.id} x={text.x} y={text.y}>
-        {text.content}
-      </TextsDiv>
-    ))}
-  </>
-);
+const initialTextState: Record<string, Text> = {
+  text1: {
+    content: "Hello my peepedipoops",
+    id: "text1",
+    x: 200,
+    y: 50
+  }
+};
+
+export const Texts: React.FC<TextsProps> = ({ socket }) => {
+  const [texts, setTexts] = useState<Record<string, Text>>(initialTextState);
+
+  useEffect(() => {
+    socket.on("update-text", ({ id, x, y, ...rest }: Text) => {
+      console.log("Got update text", id, x, y, rest);
+
+      setTexts(texts => ({
+        ...texts,
+        [id]: {
+          ...rest,
+          id,
+          x: x * window.innerWidth,
+          y: y * window.innerHeight
+        }
+      }));
+    });
+  }, [socket]);
+
+  return (
+    <>
+      {Object.values(texts).map(text => (
+        <TextsDiv
+          key={text.id}
+          style={{
+            top: text.y,
+            left: text.x
+          }}
+        >
+          {text.content}
+        </TextsDiv>
+      ))}
+    </>
+  );
+};

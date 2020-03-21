@@ -17,3 +17,8 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+.react-draggable-dragging,
+.mouse-cursor {
+  z-index: 9999999999 !important;
+}

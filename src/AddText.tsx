@@ -1,52 +1,100 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, CSSProperties } from "react";
 import Draggable from "react-draggable";
+import { DraggableData } from "react-draggable";
+import { FaCheck, FaTrash } from "react-icons/fa";
+import { Text } from "../backend/interface";
 
 export interface NewTextData {
   x: number;
   y: number;
   content: string;
+  color: string;
 }
 
 interface AddTextProps {
-  textDropped: (e: NewTextData) => void;
+  socket: SocketIOClient.Socket;
 }
 
 interface InputTextFieldProps {
-  done: (event: NewTextData) => void;
+  done: (text: string) => void;
   cancel: () => void;
-  newTextData: NewTextData;
+  style: CSSProperties;
 }
 
-const InputTextField = ({ done, cancel, newTextData }: InputTextFieldProps) => {
+const InputTextField = ({ done, cancel, style }: InputTextFieldProps) => {
+  const [newTextData, setNewTextData] = useState<string>("");
+
   return (
-    <div>
-      <div onClick={() => done(newTextData)}>Done</div>
-      <div onClick={cancel}>Cancel</div>
+    <div style={style}>
       <input
-        style={{ borderWidth: "10px" }}
+        autoFocus
+        style={{
+          margin: 0,
+          padding: 0,
+          backgroundColor: "transparent",
+          border: 0,
+          color: "#eee",
+          fontSize: 30,
+          fontFamily: '"Patrick Hand", cursive'
+        }}
         type="text"
-        id="fname"
-        name="fname"
-      ></input>
+        onKeyDown={e => {
+          if (e.key === "Enter") {
+            done(newTextData);
+          }
+        }}
+        onChange={e => setNewTextData(e.target.value)}
+        value={newTextData}
+      />
+      <div
+        style={{
+          display: "flex"
+        }}
+      >
+        <div
+          onClick={() => done(newTextData)}
+          style={{
+            color: "lightGrey"
+          }}
+        >
+          <FaCheck style={{ color: "green" }} />
+        </div>
+        <div onClick={cancel}>
+          <FaTrash style={{ color: "tomato" }} />
+        </div>
+      </div>
     </div>
   );
 };
 
-export const AddText = ({ textDropped }: AddTextProps) => {
-  const [newTextData, setNewTextData] = useState<NewTextData | null>();
+export const AddText = ({ socket }: AddTextProps) => {
+  const [pos, setPos] = useState<{ x: number; y: number } | null>(null);
+
+  console.log(pos);
 
   return (
     <>
-      {newTextData && (
+      {pos && (
         <InputTextField
-          done={() => {
-            textDropped(newTextData);
-            setNewTextData(null);
+          style={{
+            position: "absolute",
+            left: pos.x,
+            top: pos.y,
+            display: "flex",
+            flexDirection: "column"
+          }}
+          done={content => {
+            socket.emit("create-text", {
+              content,
+              x: pos.x / window.innerWidth,
+              y: pos.y / window.innerHeight,
+              color: "black"
+            });
+            setPos(null);
           }}
           cancel={() => {
-            setNewTextData(null);
+            setPos(null);
           }}
-          newTextData={newTextData}
         />
       )}
       <span
@@ -62,7 +110,7 @@ export const AddText = ({ textDropped }: AddTextProps) => {
       </span>
       <Draggable
         onStop={(e: any) => {
-          setNewTextData({ x: e.clientX, y: e.clientY, content: "" });
+          setPos({ x: e.pageX, y: e.pageY });
         }}
         position={{ x: 0, y: 0 }}
       >

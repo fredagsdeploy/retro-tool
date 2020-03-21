@@ -6,3 +6,11 @@ export interface Note {
   y: number;
   z: number;
 }
+
+export interface Text {
+  content: string;
+  color: string;
+  id: string;
+  x: number;
+  y: number;
+}

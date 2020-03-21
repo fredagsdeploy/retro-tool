@@ -10,6 +10,7 @@ import Draggable from "react-draggable";
 import { DraggableEvent, DraggableData } from "react-draggable";
 import { Note } from "../backend/interface";
 import { throttle } from "lodash-es";
+import tinycolor from "tinycolor2";
 
 interface NotesProps {
   socket: SocketIOClient.Socket;
@@ -124,7 +125,11 @@ export const Notes: React.FC<NotesProps> = ({ socket }) => {
               <GrabHandle />
               <GrabHandle />
             </GrabBar>
-            <NotesContent>
+            <NotesContent
+              style={{
+                color: tinycolor(note.color).isLight() ? "black" : "white"
+              }}
+            >
               {note.content.split("\n").map((text, index) => (
                 <Fragment key={index}>
                   <span>{text}</span>

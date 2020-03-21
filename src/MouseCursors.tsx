@@ -54,6 +54,7 @@ export const MouseCursors: React.FC<Props> = ({ socket }) => {
         <svg
           height="30"
           width="30"
+          className="mouse-cursor"
           viewBox="0 0 500 500"
           key={c.id}
           style={{

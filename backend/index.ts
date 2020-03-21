@@ -1,15 +1,33 @@
 import socketio from "socket.io";
 import * as uuid from "uuid";
 import { sample } from "lodash";
-import { Note } from "./interface";
+import { Note, Text } from "./interface";
 
 const io = socketio(1234);
 const usedNames = new Set<string>();
 const notes = new Map<string, Note>();
+const texts = new Map<string, Text>();
 let largestZ = 0;
 
-io.on("connection", socket => {
-  const id = uuid.v4();
+const updateNote = (id: string, newParams: Partial<Note>): Note | undefined => {
+  const oldNote = notes.get(id);
+
+  if (!oldNote) {
+    return undefined;
+  }
+
+  const newNote: Note = {
+    ...oldNote,
+    ...newParams,
+    z: largestZ++
+  };
+
+  notes.set(id, newNote);
+
+  return newNote;
+};
+
+const generateUniqueName = () => {
   let name = "";
   do {
     if (usedNames.size === names.length) {
@@ -18,10 +36,35 @@ io.on("connection", socket => {
     name = sample(names)!;
   } while (usedNames.has(name));
   usedNames.add(name);
+  return name;
+};
+
+io.on("connection", socket => {
+  const id = uuid.v4();
+  const name = generateUniqueName();
 
   socket.on("mouse", event => {
     const { x, y } = event;
     socket.broadcast.volatile.emit("mouse", { x, y, id, name });
+  });
+
+  socket.on("create-text", event => {
+    const id = uuid.v4();
+    const { x, y, color, content } = event;
+    const newText: Text = {
+      id,
+      x,
+      y,
+      content,
+      color
+    };
+    texts.set(id, newText);
+    io.emit("update-text", newText);
+  });
+
+  socket.on("update-text-content", (updatedText: Text) => {
+    texts.set(updatedText.id, updatedText);
+    io.emit("update-text", updatedText);
   });
 
   socket.on("create-note", event => {
@@ -29,7 +72,11 @@ io.on("connection", socket => {
     const { x, y } = event;
     const newNote: Note = {
       content: `crap\n // ${name} `,
-      color: "#" + Math.floor(Math.random() * 16777215).toString(16),
+      color:
+        "#" +
+        Math.random()
+          .toString(16)
+          .substring(9),
       id,
       x,
       y,
@@ -43,37 +90,23 @@ io.on("connection", socket => {
 
   socket.on("move-note", event => {
     const { id, x, y } = event;
-    const oldNote = notes.get(id);
+    const newNote = updateNote(id, { x, y });
 
-    if (!oldNote) {
+    if (!newNote) {
       return;
     }
-    const newNote: Note = {
-      ...oldNote,
-      x,
-      y,
-      z: largestZ++
-    };
 
-    notes.set(id, newNote);
     socket.broadcast.volatile.emit("update-note", newNote);
   });
 
   socket.on("drop-note", event => {
     const { id, x, y } = event;
-    const oldNote = notes.get(id);
+    const newNote = updateNote(id, { x, y });
 
-    if (!oldNote) {
+    if (!newNote) {
       return;
     }
-    const newNote: Note = {
-      ...oldNote,
-      x,
-      y,
-      z: largestZ++
-    };
 
-    notes.set(id, newNote);
     io.emit("update-note", newNote);
   });
 
