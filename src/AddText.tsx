@@ -59,10 +59,10 @@ const InputTextField = ({ done, cancel, style }: InputTextFieldProps) => {
             color: "lightGrey"
           }}
         >
-          <FaCheck style={{ color: "green" }} />
+          <FaCheck style={{ color: "green", width: "40px", height: "40px" }} />
         </div>
         <div onClick={cancel}>
-          <FaTrash style={{ color: "tomato" }} />
+          <FaTrash style={{ color: "tomato", width: "40px", height: "40px" }} />
         </div>
       </div>
     </div>
