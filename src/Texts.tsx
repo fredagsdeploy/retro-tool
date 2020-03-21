@@ -1,6 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import tinycolor from "tinycolor2";
+import { getTextColorForBackground } from "./colors";
+import { EditableText } from "./EditableText";
+import { useSocketEvent } from "./hooks/useSocketEvent";
+import { useSocket } from "./SocketContext";
 
 export interface Text {
   content: string;
@@ -9,35 +12,29 @@ export interface Text {
   y: number;
 }
 
-interface TextsProps {
-  socket: SocketIOClient.Socket;
-}
-
 const TextsDiv = styled.div`
   position: absolute;
-  color: ${tinycolor("#222").isLight() ? "#333" : "#eee"};
+  color: ${getTextColorForBackground("#222")};
   font-family: "Patrick Hand", cursive;
   font-size: 30px;
 `;
 
-export const Texts: React.FC<TextsProps> = ({ socket }) => {
+export const Texts: React.FC = () => {
   const [texts, setTexts] = useState<Record<string, Text>>({});
 
-  useEffect(() => {
-    socket.on("update-text", ({ id, x, y, ...rest }: Text) => {
-      console.log("Got update text", id, x, y, rest);
+  const socket = useSocket();
 
-      setTexts(texts => ({
-        ...texts,
-        [id]: {
-          ...rest,
-          id,
-          x: x * window.innerWidth,
-          y: y * window.innerHeight
-        }
-      }));
-    });
-  }, [socket]);
+  useSocketEvent("update-text", ({ id, x, y, ...rest }: Text) => {
+    setTexts(texts => ({
+      ...texts,
+      [id]: {
+        ...rest,
+        id,
+        x: x * window.innerWidth,
+        y: y * window.innerHeight
+      }
+    }));
+  });
 
   return (
     <>
@@ -49,7 +46,24 @@ export const Texts: React.FC<TextsProps> = ({ socket }) => {
             left: text.x
           }}
         >
-          {text.content}
+          <EditableText
+            inputStyle={{
+              margin: 0,
+              padding: 0,
+              backgroundColor: "transparent",
+              border: 0,
+              color: getTextColorForBackground("#222"),
+              fontSize: 30,
+              fontFamily: '"Patrick Hand", cursive'
+            }}
+            onTextChanged={content => {
+              socket.emit("update-text-content", {
+                id: text.id,
+                content
+              });
+            }}
+            value={text.content}
+          />
         </TextsDiv>
       ))}
     </>

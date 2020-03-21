@@ -1,6 +1,8 @@
 import React, { useEffect, useState, useRef } from "react";
 
 import { throttle } from "lodash-es";
+import { useSocketEvent } from "./hooks/useSocketEvent";
+import { useSocket } from "./SocketContext";
 
 interface SocketMouseEvent {
   id: string;
@@ -13,32 +15,27 @@ interface SocketRemoveEvent {
   id: string;
 }
 
-interface Props {
-  socket: SocketIOClient.Socket;
-}
-
-export const MouseCursors: React.FC<Props> = ({ socket }) => {
+export const MouseCursors: React.FC = () => {
   const [cursors, setCursors] = useState<Record<string, SocketMouseEvent>>({});
 
+  useSocketEvent("mouse", ({ x, y, id, name }: SocketMouseEvent) => {
+    setCursors(c => ({
+      ...c,
+      [id]: { id, x: x * window.innerWidth, y: y * window.innerHeight, name }
+    }));
+  });
+  useSocketEvent("remove", ({ id }: SocketRemoveEvent) => {
+    setCursors(({ [id]: a, ...c }) => c);
+  });
+
+  const socket = useSocket();
+
   useEffect(() => {
-    socket.on("mouse", ({ x, y, id, name }: SocketMouseEvent) => {
-      setCursors(c => ({
-        ...c,
-        [id]: { id, x: x * window.innerWidth, y: y * window.innerHeight, name }
-      }));
-    });
-
-    socket.on("remove", ({ id }: SocketRemoveEvent) => {
-      setCursors(({ [id]: a, ...c }) => c);
-    });
-
     const newLocal = throttle((event: MouseEvent): void => {
       const { pageX, pageY } = event;
       const x = pageX / window.innerWidth;
       const y = pageY / window.innerHeight;
-      if (socket) {
-        socket.emit("mouse", { x, y });
-      }
+      socket.emit("mouse", { x, y });
     }, 100);
 
     window.addEventListener("mousemove", newLocal);

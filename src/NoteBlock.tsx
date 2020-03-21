@@ -1,6 +1,7 @@
 import React from "react";
-import styled from "styled-components";
 import Draggable from "react-draggable";
+import styled from "styled-components";
+import { useSocket } from "./SocketContext";
 
 const NoteBlockStyle = styled.div`
   background-color: yellowgreen;
@@ -18,11 +19,9 @@ const NoteBlockStyle = styled.div`
   }
 `;
 
-interface Props {
-  socket: SocketIOClient.Socket;
-}
+export const NoteBlock = () => {
+  const socket = useSocket();
 
-export const NoteBlock = ({ socket }: Props) => {
   return (
     <>
       <NoteBlockStyle />

@@ -1,35 +1,17 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { MouseCursors } from "./MouseCursors";
 import { connectSocket } from "./socket";
 import { Notes } from "./Notes";
-import { Text, Texts } from "./Texts";
-import { Token, Tokens } from "./Tokens";
+import { Texts } from "./Texts";
+import { Tokens } from "./Tokens";
 import { NoteBlock } from "./NoteBlock";
 import { AddText } from "./AddText";
-import { v4 as uuidv4 } from "uuid";
-import { NewTextData } from "./AddText";
-
-const initialTokenState: Record<string, Token> = {
-  "tomato-token": {
-    color: "tomato",
-    id: "tomato-token2",
-    x: 800,
-    y: 50
-  },
-  "yellowgreen-token": {
-    color: "yellowgreen",
-    id: "yellowgreen-token1",
-    x: 120,
-    y: 190
-  }
-};
+import { TokensPile } from "./TokensPile";
+import { SocketContextProvider } from "./SocketContext";
 
 interface Props {}
 
 export const App: React.FC<Props> = () => {
-  const [tokens, setTokens] = useState<Record<string, Token>>(
-    initialTokenState
-  );
   const [connected, setConnected] = useState<boolean>(false);
   const socketRef = useRef<SocketIOClient.Socket | null>(null);
 
@@ -49,13 +31,16 @@ export const App: React.FC<Props> = () => {
   }
 
   return (
-    <div>
-      <NoteBlock socket={socketRef.current} />
-      <AddText socket={socketRef.current} />
-      <Notes socket={socketRef.current} />
-      <Texts socket={socketRef.current} />
-      <Tokens tokens={tokens} socket={socketRef.current} />
-      <MouseCursors socket={socketRef.current} />
-    </div>
+    <SocketContextProvider value={socketRef.current}>
+      <div>
+        <NoteBlock />
+        <AddText />
+        <TokensPile />
+        <Notes />
+        <Texts />
+        <Tokens />
+        <MouseCursors />
+      </div>
+    </SocketContextProvider>
   );
 };

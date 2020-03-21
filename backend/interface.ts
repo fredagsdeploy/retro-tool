@@ -14,3 +14,10 @@ export interface Text {
   x: number;
   y: number;
 }
+
+export interface Token {
+  color: string;
+  id: string;
+  x: number;
+  y: number;
+}

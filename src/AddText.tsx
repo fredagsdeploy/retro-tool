@@ -1,20 +1,15 @@
-import React, { useState, useEffect, CSSProperties } from "react";
+import React, { CSSProperties, useState } from "react";
 import Draggable from "react-draggable";
-import { DraggableData } from "react-draggable";
 import { FaCheck, FaTrash } from "react-icons/fa";
-import { Text } from "../backend/interface";
-import tinycolor from "tinycolor2";
 import styled from "styled-components";
+import { getTextColorForBackground } from "./colors";
+import { useSocket } from "./SocketContext";
 
 export interface NewTextData {
   x: number;
   y: number;
   content: string;
   color: string;
-}
-
-interface AddTextProps {
-  socket: SocketIOClient.Socket;
 }
 
 interface InputTextFieldProps {
@@ -35,7 +30,7 @@ const InputTextField = ({ done, cancel, style }: InputTextFieldProps) => {
           padding: 0,
           backgroundColor: "transparent",
           border: 0,
-          color: "#eee",
+          color: getTextColorForBackground("#222"),
           fontSize: 30,
           fontFamily: '"Patrick Hand", cursive'
         }}
@@ -69,8 +64,9 @@ const InputTextField = ({ done, cancel, style }: InputTextFieldProps) => {
   );
 };
 
-export const AddText = ({ socket }: AddTextProps) => {
+export const AddText: React.FC = () => {
   const [pos, setPos] = useState<{ x: number; y: number } | null>(null);
+  const socket = useSocket();
 
   return (
     <>
@@ -119,7 +115,7 @@ const StyledT = styled.span`
   top: 10px;
   font-size: 72px;
   font-family: Times;
-  color: ${tinycolor("#222").isLight() ? "black" : "white"};
+  color: ${getTextColorForBackground("#222")};
 
   user-select: none;
 

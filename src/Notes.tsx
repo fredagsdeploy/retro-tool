@@ -1,74 +1,49 @@
+import { throttle } from "lodash-es";
 import React, {
-  Fragment,
-  useState,
+  CSSProperties,
   useCallback,
   useEffect,
-  MouseEventHandler
+  useState,
+  useRef
 } from "react";
+import Draggable, { DraggableData } from "react-draggable";
 import styled from "styled-components";
-import Draggable from "react-draggable";
-import { DraggableEvent, DraggableData } from "react-draggable";
 import { Note } from "../backend/interface";
-import { throttle } from "lodash-es";
-import tinycolor from "tinycolor2";
+import { getTextColorForBackground } from "./colors";
+import { EditableText } from "./EditableText";
+import { useSocket } from "./SocketContext";
+import { useSocketEvent } from "./hooks/useSocketEvent";
 
-interface NotesProps {
-  socket: SocketIOClient.Socket;
-}
-
-interface NotesDivProps {
-  color: string;
-}
-
-const NotesDiv = styled.div<NotesDivProps>`
-  transition: transform 50ms linear;
-  background-color: ${props => props.color};
-  position: absolute;
-  color: white;
-  width: 120px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-  font-family: "Patrick Hand", cursive;
-  font-size: 18px;
-`;
-
-const NotesContent = styled.div`
-  padding: 0 20px 20px 20px;
-  width: 120px;
-`;
-
-const GrabHandle = styled.div`
-  height: 4px;
-  margin-bottom: 2px;
-  background-color: rgba(0, 0, 0, 0.15);
-  border-radius: 2px;
-`;
-
-const GrabBar = styled.div`
-  padding: 5px 10px;
-  :hover {
-    cursor: move;
-  }
-  :active {
-    cursor: grab;
-  }
-`;
-
-export const Notes: React.FC<NotesProps> = ({ socket }) => {
+export const Notes: React.FC = () => {
   const [notes, setNotes] = useState<Record<string, Note>>({});
+  const [noteCreatedId, setNoteCreatedId] = useState<string | null>(null);
 
-  useEffect(() => {
-    socket.on("update-note", ({ id, x, y, ...rest }: Note) => {
-      setNotes(notes => ({
-        ...notes,
-        [id]: {
-          ...rest,
-          id,
-          x: x * window.innerWidth,
-          y: y * window.innerHeight
-        }
-      }));
-    });
-  }, [socket]);
+  useSocketEvent("update-note", ({ id, x, y, ...rest }: Note) => {
+    setNotes(notes => ({
+      ...notes,
+      [id]: {
+        ...rest,
+        id,
+        x: x * window.innerWidth,
+        y: y * window.innerHeight
+      }
+    }));
+  });
+
+  useSocketEvent("create-note", ({ id, x, y, ...rest }: Note) => {
+    setNoteCreatedId(id);
+    setNotes(notes => ({
+      ...notes,
+      [id]: {
+        ...rest,
+        id,
+        x: x * window.innerWidth,
+        y: y * window.innerHeight
+      }
+    }));
+  });
+
+  const socket = useSocket();
 
   const handleDrag = useCallback(
     throttle(({ x, y }: DraggableData, noteId: string) => {
@@ -107,27 +82,99 @@ export const Notes: React.FC<NotesProps> = ({ socket }) => {
           onDrag={(event, pos) => handleDrag(pos, note.id)}
           onStop={(event, pos) => handleDrop(pos, note.id)}
         >
-          <NotesDiv color={note.color} style={{ zIndex: note.z }}>
-            <GrabBar className="handle">
-              <GrabHandle />
-              <GrabHandle />
-              <GrabHandle />
-            </GrabBar>
-            <NotesContent
+          <div>
+            <NoteDiv
               style={{
-                color: tinycolor(note.color).isLight() ? "black" : "white"
+                zIndex: note.z,
+                backgroundColor: note.color
               }}
             >
-              {note.content.split("\n").map((text, index) => (
-                <Fragment key={index}>
-                  <span>{text}</span>
-                  <br />
-                </Fragment>
-              ))}
-            </NotesContent>
-          </NotesDiv>
+              <NotesContent
+                style={{
+                  color: getTextColorForBackground(note.color)
+                }}
+              >
+                <EditableText
+                  multiline={true}
+                  style={{
+                    wordBreak: "break-all"
+                  }}
+                  initialEdit={noteCreatedId === note.id}
+                  inputStyle={{
+                    maxWidth: "100%",
+                    margin: 0,
+                    padding: 0,
+                    backgroundColor: "transparent",
+                    border: 0,
+                    fontSize: "inherit",
+                    color: getTextColorForBackground(note.color),
+                    fontFamily: '"Patrick Hand", cursive'
+                  }}
+                  onTextChanged={content => {
+                    socket.emit("update-note-content", {
+                      id: note.id,
+                      content
+                    });
+                  }}
+                  value={note.content}
+                />
+              </NotesContent>
+            </NoteDiv>
+          </div>
         </Draggable>
       ))}
     </>
   );
 };
+
+interface NoteProps {
+  style?: CSSProperties;
+  className?: string;
+}
+
+export const NoteDiv: React.FC<NoteProps> = ({
+  style,
+  className,
+  children
+}) => (
+  <NoteDivStyle style={style} className={className}>
+    <GrabBar className="handle">
+      <GrabHandle />
+      <GrabHandle />
+      <GrabHandle />
+    </GrabBar>
+    {children}
+  </NoteDivStyle>
+);
+
+export const NoteDivStyle = styled.div`
+  transition: transform 50ms linear;
+  position: absolute;
+  color: white;
+  width: 120px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  font-family: "Patrick Hand", cursive;
+  font-size: 18px;
+`;
+
+const NotesContent = styled.div`
+  padding: 0 20px 20px 20px;
+  width: 120px;
+`;
+
+const GrabHandle = styled.div`
+  height: 4px;
+  margin-bottom: 2px;
+  background-color: rgba(0, 0, 0, 0.15);
+  border-radius: 2px;
+`;
+
+const GrabBar = styled.div`
+  padding: 5px 10px;
+  :hover {
+    cursor: move;
+  }
+  :active {
+    cursor: grab;
+  }
+`;
