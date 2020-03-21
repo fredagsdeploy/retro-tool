@@ -1,80 +1,82 @@
-import React, { useEffect, useState, useRef } from "react";
-import io from "socket.io-client";
-import { throttle } from "lodash-es";
+import React, { useState, useEffect, useRef, useCallback } from "react";
+import { MouseCursors } from "./MouseCursors";
+import { connectSocket } from "./socket";
+import { Notes } from "./Notes";
+import { Text, Texts } from "./Texts";
+import { Token, Tokens } from "./Tokens";
+import { NoteBlock } from "./NoteBlock";
+import { AddText } from "./AddText";
+import { v4 as uuidv4 } from "uuid";
+import { NewTextData } from "./AddText";
 
-interface SocketMouseEvent {
-  id: string;
-  x: number;
-  y: number;
-}
+const initialTextState: Record<string, Text> = {
+  text1: {
+    content: "Hello my peepedipoops",
+    id: "text1",
+    x: 200,
+    y: 50
+  }
+};
 
-interface SocketRemoveEvent {
-  id: string;
-}
+const initialTokenState: Record<string, Token> = {
+  "tomato-token": {
+    color: "tomato",
+    id: "tomato-token2",
+    x: 800,
+    y: 50
+  },
+  "yellowgreen-token": {
+    color: "yellowgreen",
+    id: "yellowgreen-token1",
+    x: 120,
+    y: 190
+  }
+};
 
-export const App = () => {
-  const socketRef = useRef<SocketIOClient.Socket>();
-  const [cursors, setCursors] = useState<Record<string, SocketMouseEvent>>({});
+interface Props {}
+
+export const App: React.FC<Props> = () => {
+  const [texts, setTexts] = useState<Record<string, Text>>(initialTextState);
+  const [tokens, setTokens] = useState<Record<string, Token>>(
+    initialTokenState
+  );
+  const [connected, setConnected] = useState<boolean>(false);
+  const socketRef = useRef<SocketIOClient.Socket | null>(null);
 
   useEffect(() => {
-    const socket = io(`ws://${window.location.hostname}:1234`);
+    const { socket, cleanup } = connectSocket();
     socketRef.current = socket;
-
-    socket.on("mouse", ({ x, y, id }: SocketMouseEvent) => {
-      setCursors(c => ({
-        ...c,
-        [id]: { id, x: x * window.innerWidth, y: y * window.innerHeight }
-      }));
-    });
-
-    socket.on("remove", ({ id }: SocketRemoveEvent) => {
-      setCursors(({ [id]: a, ...c }) => c);
-    });
+    setConnected(true);
 
     return () => {
-      socket.close();
+      setConnected(false);
+      cleanup();
     };
   }, []);
 
-  useEffect(() => {
-    const newLocal = throttle((event: MouseEvent): void => {
-      const { pageX, pageY } = event;
-      const x = pageX / window.innerWidth;
-      const y = pageY / window.innerHeight;
-      if (socketRef.current) {
-        socketRef.current.emit("mouse", { x, y });
-      }
-    }, 100);
-
-    window.addEventListener("mousemove", newLocal);
-
-    return () => {
-      window.removeEventListener("mousemove", newLocal);
-    };
-  }, []);
+  if (!connected || !socketRef.current) {
+    return null;
+  }
 
   return (
-    <>
-      {Object.values(cursors).map(c => (
-        <svg
-          height="30"
-          width="30"
-          viewBox="0 0 500 500"
-          key={c.id}
-          style={{
-            transition: "transform 100ms linear",
-            position: "absolute",
-            top: 0,
-            left: 0,
-            transform: `translate(${c.x}px, ${c.y}px)`
-          }}
-          fill="none"
-          strokeWidth={"50"}
-          stroke={"#" + c.id.substr(0, 6)}
-        >
-          <polygon points="100,60 100,450 400,400" />
-        </svg>
-      ))}
-    </>
+    <div>
+      <NoteBlock />
+      <AddText
+        textDropped={(d: NewTextData) => {
+          const id = uuidv4();
+          setTexts({
+            ...texts,
+            [id]: {
+              ...d,
+              id
+            }
+          });
+        }}
+      />
+      <Notes socket={socketRef.current} />
+      <Texts texts={texts} socket={socketRef.current} />
+      <Tokens tokens={tokens} socket={socketRef.current} />
+      <MouseCursors socket={socketRef.current} />
+    </div>
   );
 };

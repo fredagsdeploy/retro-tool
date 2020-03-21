@@ -8,6 +8,8 @@
     "start": "ts-node-dev index.ts"
   },
   "dependencies": {
+    "@types/lodash-es": "^4.17.3",
+    "lodash-es": "^4.17.15",
     "socket.io": "^2.3.0",
     "uuid": "^7.0.2"
   },
