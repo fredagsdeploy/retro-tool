@@ -5,6 +5,7 @@ RUN yarn --pure-lockfile
 
 COPY . ./
 
+RUN cd backend && yarn
 ENV NODE_ENV=production
 RUN yarn build
 
