@@ -1,7 +1,7 @@
 import io from "socket.io-client";
 
 export const connectSocket = () => {
-  const socket = io(`wss://${window.location.hostname}/ws`);
+  const socket = io(`ws://${window.location.hostname}/ws`);
 
   return {
     socket,
