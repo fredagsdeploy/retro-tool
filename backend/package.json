@@ -5,8 +5,7 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "start": "ts-node-dev index.ts",
-    ""
+    "start": "ts-node-dev index.ts"
   },
   "dependencies": {
     "@types/lodash": "4.14.149",
