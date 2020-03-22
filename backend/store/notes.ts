@@ -49,8 +49,13 @@ export const createNotesStore = () => {
     return newNote;
   };
 
+  const deleteNote = (id: string) => {
+    return notes.delete(id);
+  };
+
   return {
     createNote,
-    updateNote
+    updateNote,
+    deleteNote
   };
 };

@@ -8,6 +8,8 @@ import { NoteBlock } from "./NoteBlock";
 import { AddText } from "./AddText";
 import { TokensPile } from "./TokensPile";
 import { SocketContextProvider } from "./SocketContext";
+import { FaTrash } from "react-icons/fa";
+import styled from "styled-components";
 
 interface Props {}
 
@@ -32,15 +34,47 @@ export const App: React.FC<Props> = () => {
 
   return (
     <SocketContextProvider value={socketRef.current}>
-      <div>
-        <NoteBlock />
-        <AddText />
-        <TokensPile />
-        <Notes />
-        <Texts />
-        <Tokens />
-        <MouseCursors />
-      </div>
+      <NoteBlock />
+      <AddText />
+      <TokensPile />
+      <Notes />
+      <Texts />
+      <Tokens />
+      <MouseCursors />
+      <TrashCanDiv>
+        <FaTrash
+          className="trash"
+          onMouseUp={() => {
+            console.log("TRASH THE CRAP");
+          }}
+          onMouseMove={() => {
+            console.log("Mouse over trash", Math.random());
+          }}
+        />
+      </TrashCanDiv>
     </SocketContextProvider>
   );
 };
+
+const TrashCanDiv = styled.div`
+  position: fixed;
+  z-index: 100;
+  bottom: 100px;
+  left: 50%;
+
+  .trash {
+    z-index: 100;
+    width: 72px;
+    height: 72px;
+    position: relative;
+    transition: transform 100ms ease-in-out;
+  }
+
+  :hover {
+    bottom: 110px;
+
+    .trash {
+      transform: scale(1.2) translateY(-30px);
+    }
+  }
+`;

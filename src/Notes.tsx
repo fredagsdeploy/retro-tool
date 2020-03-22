@@ -82,10 +82,9 @@ export const Notes: React.FC = () => {
           onDrag={(event, pos) => handleDrag(pos, note.id)}
           onStop={(event, pos) => handleDrop(pos, note.id)}
         >
-          <div>
+          <div style={{ position: "absolute", zIndex: note.z }}>
             <NoteDiv
               style={{
-                zIndex: note.z,
                 backgroundColor: note.color
               }}
             >
@@ -149,7 +148,6 @@ export const NoteDiv: React.FC<NoteProps> = ({
 
 export const NoteDivStyle = styled.div`
   transition: transform 50ms linear;
-  position: absolute;
   color: white;
   width: 120px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);

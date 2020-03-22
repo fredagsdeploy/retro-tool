@@ -40,8 +40,13 @@ export const createTokensStore = () => {
     return newToken;
   };
 
+  const deleteToken = (id: string) => {
+    return Tokens.delete(id);
+  };
+
   return {
     createToken,
-    updateToken
+    updateToken,
+    deleteToken
   };
 };

@@ -45,8 +45,13 @@ export const createTextsStore = () => {
     return newText;
   };
 
+  const deleteText = (id: string) => {
+    return texts.delete(id);
+  };
+
   return {
     createText,
-    updateText
+    updateText,
+    deleteText
   };
 };

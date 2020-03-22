@@ -1,6 +1,7 @@
 import React from "react";
 import { TokensDiv } from "./Tokens";
 import { useSocket } from "./SocketContext";
+import { DragDuplicated } from "./DragDuplicated";
 
 export const TokensPile = () => {
   const socket = useSocket();
@@ -18,55 +19,38 @@ export const TokensPile = () => {
         display: "flex"
       }}
     >
-      <TokensDiv
-        onClick={() => sendCreateNewSocket("tomato", 0, 0)}
-        x={0}
-        y={0}
-        color="tomato"
-        position="relative"
-      />
-      <TokensDiv
-        onClick={() => sendCreateNewSocket("green", 0, 0)}
-        x={0}
-        y={0}
-        color="green"
-        position="relative"
-      />
-      <TokensDiv
-        onClick={() => sendCreateNewSocket("blue", 0, 0)}
-        x={0}
-        y={0}
-        color="blue"
-        position="relative"
-      />
-      <TokensDiv
-        onClick={() => sendCreateNewSocket("yellowgreen", 0, 0)}
-        x={0}
-        y={0}
-        color="yellowgreen"
-        position="relative"
-      />
-      <TokensDiv
-        onClick={() => sendCreateNewSocket("goldenrod", 0, 0)}
-        x={0}
-        y={0}
-        color="goldenrod"
-        position="relative"
-      />
-      <TokensDiv
-        onClick={() => sendCreateNewSocket("rebeccapurple", 0, 0)}
-        x={0}
-        y={0}
-        color="rebeccapurple"
-        position="relative"
-      />
-      <TokensDiv
-        onClick={() => sendCreateNewSocket("orangered", 0, 0)}
-        x={0}
-        y={0}
-        color="orangered"
-        position="relative"
-      />
+      <DragDuplicated
+        onDrop={({ x, y }) => sendCreateNewSocket("tomato", x, y)}
+      >
+        <TokensDiv color="tomato" position="relative" />
+      </DragDuplicated>
+
+      <DragDuplicated onDrop={({ x, y }) => sendCreateNewSocket("green", x, y)}>
+        <TokensDiv color="green" position="relative" />
+      </DragDuplicated>
+      <DragDuplicated onDrop={({ x, y }) => sendCreateNewSocket("blue", x, y)}>
+        <TokensDiv color="blue" position="relative" />
+      </DragDuplicated>
+      <DragDuplicated
+        onDrop={({ x, y }) => sendCreateNewSocket("yellowgreen", x, y)}
+      >
+        <TokensDiv color="yellowgreen" position="relative" />
+      </DragDuplicated>
+      <DragDuplicated
+        onDrop={({ x, y }) => sendCreateNewSocket("goldenrod", x, y)}
+      >
+        <TokensDiv color="goldenrod" position="relative" />
+      </DragDuplicated>
+      <DragDuplicated
+        onDrop={({ x, y }) => sendCreateNewSocket("rebeccapurple", x, y)}
+      >
+        <TokensDiv color="rebeccapurple" position="relative" />
+      </DragDuplicated>
+      <DragDuplicated
+        onDrop={({ x, y }) => sendCreateNewSocket("orangered", x, y)}
+      >
+        <TokensDiv color="orangered" position="relative" />
+      </DragDuplicated>
     </div>
   );
 };

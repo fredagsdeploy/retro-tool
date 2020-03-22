@@ -1,7 +1,7 @@
 import React from "react";
-import Draggable from "react-draggable";
 import styled from "styled-components";
 import { useSocket } from "./SocketContext";
+import { DragDuplicated } from "./DragDuplicated";
 
 const NoteBlockStyle = styled.div`
   background-color: yellowgreen;
@@ -23,19 +23,15 @@ export const NoteBlock = () => {
   const socket = useSocket();
 
   return (
-    <>
+    <DragDuplicated
+      onDrop={({ x, y }) => {
+        socket.emit("create-note", {
+          x,
+          y
+        });
+      }}
+    >
       <NoteBlockStyle />
-      <Draggable
-        position={{ x: 0, y: 0 }}
-        onStop={(event: any, { x, y }) => {
-          socket.emit("create-note", {
-            x: x / window.innerWidth,
-            y: y / window.innerHeight
-          });
-        }}
-      >
-        <NoteBlockStyle />
-      </Draggable>
-    </>
+    </DragDuplicated>
   );
 };

@@ -42,7 +42,23 @@ io.on("connection", socket => {
 
   socket.on("update-token", (token: Token) => {
     const newToken = tokens.updateToken(token.id, token);
-    io.emit("update-token", newToken);
+    if (newToken) {
+      io.emit("update-token", newToken);
+    }
+  });
+
+  socket.on("move-token", (token: Token) => {
+    const newToken = tokens.updateToken(token.id, token);
+    if (newToken) {
+      socket.broadcast.volatile.emit("update-token", newToken);
+    }
+  });
+
+  socket.on("drop-token", (token: Token) => {
+    const newToken = tokens.updateToken(token.id, token);
+    if (newToken) {
+      io.emit("drop-token", newToken);
+    }
   });
 
   socket.on("create-text", (event: Text) => {
