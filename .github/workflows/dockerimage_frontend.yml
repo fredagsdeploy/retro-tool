@@ -3,8 +3,6 @@ name: Docker Image CI for frontend
 on:
   push:
     branches: [ master ]
-  pull_request:
-    branches: [ master ]
 
 jobs:
 
