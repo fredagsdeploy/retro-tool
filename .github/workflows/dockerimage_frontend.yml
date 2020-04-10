@@ -1,0 +1,24 @@
+name: Docker Image CI for frontend
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Build the Docker image
+      run: docker build . --file Dockerfile --tag retro-tool-frontend:latest
+    - name: Login to DockerHub
+      env:
+        DOCKER_USER: ${{ secrets.DOCKER_USER }}
+        DOCKER_PASS: ${{ secrets.DOCKER_PASS }}
+      run: docker login -u $DOCKER_USER -p $DOCKER_PASS
+    - name: Push image to DockerHub
+      run: docker push fredagsdeploy/retro-frontend:latest
+      
