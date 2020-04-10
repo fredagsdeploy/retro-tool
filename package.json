@@ -54,6 +54,7 @@
     ]
   },
   "devDependencies": {
-    "@types/lodash-es": "^4.17.3"
+    "@types/lodash-es": "^4.17.3",
+    "prettier": "^2.0.4"
   }
 }
