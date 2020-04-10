@@ -26,10 +26,13 @@ export const TrashCan = () => {
 const TrashCanDiv = styled.div`
   position: fixed;
   z-index: 100;
-  bottom: 100px;
-  left: 50%;
+  bottom: 0;
+  left: 0;
   width: 200px;
   height: 200px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 
   .trash {
     width: 72px;
@@ -39,8 +42,6 @@ const TrashCanDiv = styled.div`
   }
 
   :hover {
-    bottom: 110px;
-
     .trash {
       transform: scale(1.2) translateY(-30px);
     }
