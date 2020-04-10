@@ -83,6 +83,13 @@ io.on("connection", (socket) => {
     }
   });
 
+  socket.on("move-text", ({ id, x, y }: Text) => {
+    const newText = texts.updateText(id, { x, y });
+    if (newText) {
+      socket.broadcast.volatile.emit("update-text", newText);
+    }
+  });
+
   socket.on("create-note", (event: Note) => {
     const newNote = notes.createNote({
       content: `crap\n // ${name} `,
