@@ -17,7 +17,7 @@ export const EditableText: React.FC<Props> = ({
   selectAllOnMount = false,
   multiline = false,
   initialEdit = false,
-  inputStyle
+  inputStyle,
 }) => {
   const [edit, setEdit] = useState(initialEdit);
   const [innerValue, setInnerValue] = useState(value);
@@ -48,14 +48,14 @@ export const EditableText: React.FC<Props> = ({
             ref={ref}
             autoFocus
             style={inputStyle}
-            onChange={e => {
+            onChange={(e) => {
               setInnerValue(e.target.value);
             }}
             onBlur={() => {
               setEdit(false);
               onTextChanged(innerValue);
             }}
-            onKeyDown={e => {
+            onKeyDown={(e) => {
               if (e.key === "Enter") {
                 setEdit(false);
                 onTextChanged(innerValue);
@@ -70,14 +70,14 @@ export const EditableText: React.FC<Props> = ({
             ref={ref}
             autoFocus
             style={inputStyle}
-            onChange={e => {
+            onChange={(e) => {
               setInnerValue(e.target.value);
             }}
             onBlur={() => {
               setEdit(false);
               onTextChanged(innerValue);
             }}
-            onKeyDown={e => {
+            onKeyDown={(e) => {
               if (e.key === "Enter") {
                 setEdit(false);
                 onTextChanged(innerValue);

@@ -20,6 +20,25 @@ const TextsDiv = styled.div`
   color: ${getTextColorForBackground("#222")};
   font-family: "Patrick Hand", cursive;
   font-size: 30px;
+  display: flex;
+  flex-direction: row;
+
+  &:active,
+  &:hover {
+    .handle {
+      border-color: white;
+    }
+  }
+
+  .handle {
+    cursor: move;
+    color: white;
+    border-right: 10px solid transparent;
+    border-radius: 5px;
+    height: 40px;
+    width: 1px;
+    margin-right: 5px;
+  }
 `;
 
 export const Texts: React.FC = () => {
@@ -81,7 +100,8 @@ export const Texts: React.FC = () => {
           onDrag={(event, pos) => handleDrag(pos, text.id)}
           onStop={(event, pos) => handleDrop(pos, text.id)}
         >
-          <TextsDiv className="handle">
+          <TextsDiv>
+            <div className="handle" />
             <EditableText
               inputStyle={{
                 margin: 0,
