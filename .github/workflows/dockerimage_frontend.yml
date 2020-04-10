@@ -21,4 +21,9 @@ jobs:
       run: docker login -u $DOCKER_USER -p $DOCKER_PASS
     - name: Push image to DockerHub
       run: docker push fredagsdeploy/retro-frontend:latest
-      
+    - name: Workflow Webhook Action
+      uses: distributhor/workflow-webhook@v1.0.2
+      env:
+        webhook_url: ${{ secrets.WEBHOOK_URL }}
+        webhook_secret: ${{ secrets.WEBHOOK_SECRET }}
+        data: '{ "built": "fredagsdeploy/retro-frontend:latest" }'
