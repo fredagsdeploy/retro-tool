@@ -16,7 +16,7 @@ export const TokensPile = () => {
         position: "absolute",
         left: "50%",
         top: "30px",
-        display: "flex"
+        display: "flex",
       }}
     >
       <DragDuplicated
@@ -24,7 +24,6 @@ export const TokensPile = () => {
       >
         <TokensDiv color="tomato" position="relative" />
       </DragDuplicated>
-
       <DragDuplicated onDrop={({ x, y }) => sendCreateNewSocket("green", x, y)}>
         <TokensDiv color="green" position="relative" />
       </DragDuplicated>

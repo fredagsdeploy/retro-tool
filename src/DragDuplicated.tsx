@@ -9,7 +9,7 @@ interface Props {
 export const DragDuplicated: React.FC<Props> = ({
   children,
   onStart,
-  onDrop
+  onDrop,
 }) => {
   return (
     <div style={{ position: "relative" }}>
@@ -20,7 +20,7 @@ export const DragDuplicated: React.FC<Props> = ({
         onStop={(event: any) => {
           onDrop({
             x: event.pageX / window.innerWidth,
-            y: event.pageY / window.innerHeight
+            y: event.pageY / window.innerHeight,
           });
         }}
       >

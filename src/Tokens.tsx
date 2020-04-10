@@ -24,10 +24,7 @@ export const TokensDiv = styled.div<TokensDivProps>`
   height: 30px;
   border-radius: 50%;
   border: 3px solid
-    ${(props: TokensDivProps) =>
-      tinycolor(props.color)
-        .brighten()
-        .toString()};
+    ${(props: TokensDivProps) => tinycolor(props.color).brighten().toString()};
   :hover {
     cursor: grab;
   }
@@ -41,20 +38,20 @@ export const Tokens: React.FC = () => {
   const socket = useSocket();
 
   useSocketEvent("update-token", ({ id, x, y, ...rest }: Token) => {
-    setTokens(tokens => ({
+    setTokens((tokens) => ({
       ...tokens,
       [id]: {
         ...rest,
         id,
         x: x * window.innerWidth,
-        y: y * window.innerHeight
-      }
+        y: y * window.innerHeight,
+      },
     }));
   });
 
   return (
     <>
-      {Object.values(tokens).map(token => (
+      {Object.values(tokens).map((token) => (
         <Draggable
           key={token.id}
           position={{ x: token.x, y: token.y }}
@@ -62,23 +59,23 @@ export const Tokens: React.FC = () => {
             socket.emit("move-token", {
               id: token.id,
               x: x / window.innerWidth,
-              y: y / window.innerHeight
+              y: y / window.innerHeight,
             });
           }}
           onStop={(e, { x, y }: DraggableData) => {
-            setTokens(tokens => ({
+            setTokens((tokens) => ({
               ...tokens,
               [token.id]: {
                 ...tokens[token.id],
                 x,
-                y
-              }
+                y,
+              },
             }));
 
             socket.emit("drop-token", {
               id: token.id,
               x: x / window.innerWidth,
-              y: y / window.innerHeight
+              y: y / window.innerHeight,
             });
           }}
         >

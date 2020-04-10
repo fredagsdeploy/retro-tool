@@ -22,4 +22,5 @@ body {
 .react-draggable-dragging,
 .mouse-cursor {
   z-index: 9999999999 !important;
+  pointer-events: none;
 }

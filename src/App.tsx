@@ -41,16 +41,12 @@ export const App: React.FC<Props> = () => {
       <Texts />
       <Tokens />
       <MouseCursors />
-      <TrashCanDiv>
-        <FaTrash
-          className="trash"
-          onMouseUp={() => {
-            console.log("TRASH THE CRAP");
-          }}
-          onMouseMove={() => {
-            console.log("Mouse over trash", Math.random());
-          }}
-        />
+      <TrashCanDiv
+        onMouseUp={() => {
+          console.log("TRASH THE CRAP");
+        }}
+      >
+        <FaTrash className="trash" />
       </TrashCanDiv>
     </SocketContextProvider>
   );
@@ -61,9 +57,10 @@ const TrashCanDiv = styled.div`
   z-index: 100;
   bottom: 100px;
   left: 50%;
+  width: 200px;
+  height: 200px;
 
   .trash {
-    z-index: 100;
     width: 72px;
     height: 72px;
     position: relative;
