@@ -1,6 +1,6 @@
 import React, { CSSProperties, useState } from "react";
 import Draggable from "react-draggable";
-import { FaCheck, FaTrash } from "react-icons/fa";
+import { FaCheck, FaTrash, FaPlus, FaMinus } from "react-icons/fa";
 import styled from "styled-components";
 import { getTextColorForBackground } from "./colors";
 import { useSocket } from "./SocketContext";
@@ -13,16 +13,42 @@ export interface NewTextData {
 }
 
 interface InputTextFieldProps {
-  done: (text: string) => void;
+  done: (text: string, size: number) => void;
   cancel: () => void;
   style: CSSProperties;
 }
 
 const InputTextField = ({ done, cancel, style }: InputTextFieldProps) => {
   const [newTextData, setNewTextData] = useState<string>("");
+  const [size, setSize] = useState<number>(30);
 
   return (
     <div style={style}>
+      <div
+        style={{
+          display: "flex",
+          position: "absolute",
+          top: "-50px",
+        }}
+      >
+        <div
+          onClick={() => done(newTextData, size)}
+          style={{
+            color: "lightGrey",
+          }}
+        >
+          <FaCheck style={{ color: "green", width: "40px", height: "40px" }} />
+        </div>
+        <div onClick={cancel}>
+          <FaTrash style={{ color: "tomato", width: "40px", height: "40px" }} />
+        </div>
+        <div onClick={() => setSize((s) => s + 5)}>
+          <FaPlus style={{ color: "white", width: "40px", height: "40px" }} />
+        </div>
+        <div onClick={() => setSize((s) => s - 5)}>
+          <FaMinus style={{ color: "white", width: "40px", height: "40px" }} />
+        </div>
+      </div>
       <input
         autoFocus
         style={{
@@ -31,35 +57,18 @@ const InputTextField = ({ done, cancel, style }: InputTextFieldProps) => {
           backgroundColor: "transparent",
           border: 0,
           color: getTextColorForBackground("#222"),
-          fontSize: 30,
-          fontFamily: '"Patrick Hand", cursive'
+          fontSize: size,
+          fontFamily: '"Patrick Hand", cursive',
         }}
         type="text"
-        onKeyDown={e => {
+        onKeyDown={(e) => {
           if (e.key === "Enter") {
-            done(newTextData);
+            done(newTextData, size);
           }
         }}
-        onChange={e => setNewTextData(e.target.value)}
+        onChange={(e) => setNewTextData(e.target.value)}
         value={newTextData}
       />
-      <div
-        style={{
-          display: "flex"
-        }}
-      >
-        <div
-          onClick={() => done(newTextData)}
-          style={{
-            color: "lightGrey"
-          }}
-        >
-          <FaCheck style={{ color: "green", width: "40px", height: "40px" }} />
-        </div>
-        <div onClick={cancel}>
-          <FaTrash style={{ color: "tomato", width: "40px", height: "40px" }} />
-        </div>
-      </div>
     </div>
   );
 };
@@ -77,14 +86,15 @@ export const AddText: React.FC = () => {
             left: pos.x,
             top: pos.y,
             display: "flex",
-            flexDirection: "column"
+            flexDirection: "column",
           }}
-          done={content => {
+          done={(content, size) => {
             socket.emit("create-text", {
               content,
+              size,
               x: pos.x / window.innerWidth,
               y: pos.y / window.innerHeight,
-              color: "black"
+              color: "black",
             });
             setPos(null);
           }}
@@ -111,8 +121,8 @@ export const AddText: React.FC = () => {
 
 const StyledT = styled.span`
   position: absolute;
-  right: 10px;
-  top: 10px;
+  left: 10px;
+  top: 300px;
   font-size: 72px;
   font-family: Times;
   color: ${getTextColorForBackground("#222")};

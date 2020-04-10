@@ -13,10 +13,10 @@ interface StyledProps {
 
 const getGradient = (topColor: string, bottomColor: string) => {
   return `linear-gradient(180deg, ${topColor}, ${bottomColor})`;
-}
+};
 
 const PushpinHead = styled.div<StyledProps>`
-  background-color: ${props => props.color};
+  background-color: ${(props) => props.color};
   height: 20px;
   width: 20px;
   border-radius: 50%;
@@ -25,7 +25,7 @@ const PushpinHead = styled.div<StyledProps>`
 
 const PushpinContainer = styled.div<StyledProps>`
   position: relative;
-  background: ${props => props.color};
+  background: ${(props) => props.color};
   height: 30px;
   width: 30px;
   border-radius: 50%;
@@ -44,7 +44,12 @@ const PushpinContainer = styled.div<StyledProps>`
 export const Pushpin = ({ className, color }: Props) => {
   const baseColor = tinycolor(color).darken(10).toHexString();
   const darkColor = tinycolor(color).darken(20).toHexString();
-  return <PushpinContainer className={className} color={getGradient(baseColor, darkColor)}>
-    <PushpinHead color={baseColor} />
-  </PushpinContainer>
+  return (
+    <PushpinContainer
+      className={className}
+      color={getGradient(baseColor, darkColor)}
+    >
+      <PushpinHead color={baseColor} />
+    </PushpinContainer>
+  );
 };

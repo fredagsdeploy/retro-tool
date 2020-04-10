@@ -8,7 +8,7 @@ import { createTextsStore } from "./store/texts";
 import { createTokensStore } from "./store/tokens";
 
 let port = 1234;
-console.log(`Hosting on port ${port}`)
+console.log(`Hosting on port ${port}`);
 const io = socketio(port);
 const usedNames = new Set<string>();
 

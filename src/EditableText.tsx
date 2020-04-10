@@ -1,96 +1,55 @@
-import React, { CSSProperties, useEffect, useRef, useState } from "react";
+import React, { CSSProperties, useState } from "react";
+import { EditTextInput } from "./EditTextInput";
 
 interface Props {
   style?: CSSProperties;
   inputStyle?: CSSProperties;
-  value: string;
   selectAllOnMount?: boolean;
   initialEdit?: boolean;
   onTextChanged: (text: string) => void;
   multiline?: boolean;
+  renderEditComponent: (props: EditableComponentProps) => React.ReactNode;
+  component: React.ReactNode;
+}
+
+export interface EditableComponentProps {
+  onDone: (value: string) => void;
+  onCancel: () => void;
 }
 
 export const EditableText: React.FC<Props> = ({
-  value,
   onTextChanged,
   style,
-  selectAllOnMount = false,
-  multiline = false,
   initialEdit = false,
-  inputStyle,
+  renderEditComponent,
+  component
 }) => {
   const [edit, setEdit] = useState(initialEdit);
-  const [innerValue, setInnerValue] = useState(value);
-  const ref = useRef<any>();
 
-  useEffect(() => {
-    const elem = ref.current;
-    if (elem && selectAllOnMount) {
-      elem.select();
-    }
-  }, [selectAllOnMount]);
-
-  return (
-    <div
-      style={{ ...style, minHeight: 60 }}
-      onDoubleClick={
-        edit
-          ? undefined
-          : () => {
-              setEdit(true);
-              setInnerValue(value);
-            }
-      }
-    >
-      {edit ? (
-        !multiline ? (
-          <input
-            ref={ref}
-            autoFocus
-            style={inputStyle}
-            onChange={(e) => {
-              setInnerValue(e.target.value);
-            }}
-            onBlur={() => {
-              setEdit(false);
-              onTextChanged(innerValue);
-            }}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                setEdit(false);
-                onTextChanged(innerValue);
-              } else if (e.key === "Escape") {
-                setEdit(false);
-              }
-            }}
-            value={innerValue}
-          />
-        ) : (
-          <textarea
-            ref={ref}
-            autoFocus
-            style={inputStyle}
-            onChange={(e) => {
-              setInnerValue(e.target.value);
-            }}
-            onBlur={() => {
-              setEdit(false);
-              onTextChanged(innerValue);
-            }}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                setEdit(false);
-                onTextChanged(innerValue);
-              } else if (e.key === "Escape") {
-                setEdit(false);
-              }
-            }}
-            value={innerValue}
-          />
-        )
-      ) : (
-        value
-      )}
-    </div>
-  );
+  if (edit) {
+    return (
+      <div style={{ ...style, minHeight: 60 }}>
+        {renderEditComponent({
+          onCancel: () => {
+            setEdit(false);
+          },
+          onDone: (text) => {
+            onTextChanged(text);
+            setEdit(false);
+          },
+        })}
+      </div>
+    );
+  } else {
+    return (
+      <div
+        style={{ ...style, minHeight: 60 }}
+        onDoubleClick={() => {
+          setEdit(true);
+        }}
+      >
+        {component}
+      </div>
+    );
+  }
 };

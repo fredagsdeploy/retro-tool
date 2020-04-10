@@ -13,6 +13,7 @@ export interface Text {
   content: string;
   color: string;
   id: string;
+  size: number;
   x: number;
   y: number;
 }

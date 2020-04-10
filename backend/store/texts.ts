@@ -17,7 +17,7 @@ export const createTextsStore = () => {
 
     const newText: Text = {
       ...oldText,
-      ...newParams
+      ...newParams,
     };
 
     texts.set(id, newText);
@@ -28,8 +28,9 @@ export const createTextsStore = () => {
   const createText = ({
     x,
     y,
-    content
-  }: Pick<Text, "x" | "y" | "content" | "color">) => {
+    content,
+    size,
+  }: Pick<Text, "x" | "y" | "size" | "content" | "color">) => {
     const id = uuid.v4();
 
     const newText: Text = {
@@ -37,7 +38,8 @@ export const createTextsStore = () => {
       color: generateRandomColor(),
       id,
       x,
-      y
+      y,
+      size: size || 30,
     };
 
     texts.set(id, newText);
@@ -52,6 +54,6 @@ export const createTextsStore = () => {
   return {
     createText,
     updateText,
-    deleteText
+    deleteText,
   };
 };

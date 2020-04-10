@@ -36,14 +36,15 @@ export const createNotesStore = () => {
     content,
     ownedBy,
     secret,
-  }: Omit<Note, "id" | "color" | "z">) => {
+    color,
+  }: Omit<Note, "id" | "z">) => {
     const id = uuid.v4();
 
     const newNote: Note = {
       ownedBy,
       content,
       secret,
-      color: generateRandomColor(),
+      color: color || generateRandomColor(),
       id,
       x,
       y,

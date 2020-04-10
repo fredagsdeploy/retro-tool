@@ -10,6 +10,7 @@ import { useSocket } from "./SocketContext";
 import { useSocketEvent } from "./hooks/useSocketEvent";
 import { useDragContextState } from "./hooks/useDragContextState";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { EditTextInput } from "./EditTextInput";
 
 interface Props {
   userId: string;
@@ -18,7 +19,6 @@ interface Props {
 export const Notes: React.FC<Props> = ({ userId }) => {
   const [notes, setNotes] = useState<Record<string, Note>>({});
   const [noteCreatedId, setNoteCreatedId] = useState<string | null>(null);
-  const [hoveringEye, setHoveringEye] = useState(false);
   useSocketEvent("update-note", ({ id, x, y, ...rest }: Note) => {
     setNotes((notes) => ({
       ...notes,
@@ -118,25 +118,36 @@ export const Notes: React.FC<Props> = ({ userId }) => {
             onStop={(event, pos) => handleDrop(pos, note.id)}
           >
             <div style={{ position: "absolute", zIndex: note.z }}>
-              <NoteDiv color={note.color}>
+              <NoteDiv
+                color={note.color}
+                className={note.secret ? "private" : "public"}
+              >
                 <NotesContent style={textStyle}>
                   <EditableText
-                    multiline={true}
+                    renderEditComponent={({ onDone, onCancel }) => (
+                      <EditTextInput
+                        multiline={true}
+                        selectAllOnMount
+                        style={{
+                          ...textStyle,
+                          maxWidth: "100%",
+                          margin: 0,
+                          padding: 0,
+                          backgroundColor: "transparent",
+                          border: 0,
+                          fontSize: "inherit",
+                          fontFamily: '"Patrick Hand", cursive',
+                        }}
+                        defaultValue={note.content}
+                        onDone={onDone}
+                        onCancel={onCancel}
+                      />
+                    )}
                     style={{
                       wordBreak: "break-word",
                       padding: "0 1rem 1rem",
                     }}
                     initialEdit={noteCreatedId === note.id}
-                    inputStyle={{
-                      ...textStyle,
-                      maxWidth: "100%",
-                      margin: 0,
-                      padding: 0,
-                      backgroundColor: "transparent",
-                      border: 0,
-                      fontSize: "inherit",
-                      fontFamily: '"Patrick Hand", cursive',
-                    }}
                     onTextChanged={(content) => {
                       setNotes((notes) => ({
                         ...notes,
@@ -150,20 +161,14 @@ export const Notes: React.FC<Props> = ({ userId }) => {
                         content,
                       });
                     }}
-                    value={note.content}
+                    component={note.content}
                   />
                 </NotesContent>
                 {note.ownedBy === userId && (
                   <div onClick={() => togglePrivate(note.id, note.secret)}>
-                    <div
-                      onMouseEnter={() => setHoveringEye(true)}
-                      onMouseLeave={() => setHoveringEye(false)}
-                    >
-                      {note.secret || hoveringEye ? (
-                        <NotVisibleIcon />
-                      ) : (
-                        <VisibleIcon />
-                      )}
+                    <div className="eye-icon">
+                      <NotVisibleIcon className="notVisibleIcon" />
+                      <VisibleIcon className="visibleIcon" />
                     </div>
                   </div>
                 )}
@@ -208,6 +213,27 @@ export const NoteDivStyle = styled.div`
   align-items: center;
   display: flex;
   flex-direction: column;
+
+  .visibleIcon,
+  .notVisibleIcon {
+    transition: opacity 200ms ease-in-out;
+  }
+
+  &.private .notVisibleIcon {
+    opacity: 1;
+  }
+
+  &.public .eye-icon:hover .visibleIcon {
+    opacity: 0;
+  }
+
+  &.public .eye-icon:hover .notVisibleIcon {
+    opacity: 1;
+  }
+
+  &.public:hover .visibleIcon {
+    opacity: 1;
+  }
 `;
 
 const NotesContent = styled.div`
@@ -220,28 +246,14 @@ const VisibleIcon = styled(FaEye)`
   position: absolute;
   top: 3px;
   right: 3px;
-
-  :hover {
-    cursor: pointer;
-  }
-
-  ${NoteDivStyle}:hover & {
-    opacity: 1;
-  }
+  cursor: pointer;
 `;
 
 const NotVisibleIcon = styled(FaEyeSlash)`
-  opacity: 1;
+  opacity: 0;
   color: black;
   position: absolute;
   top: 3px;
   right: 3px;
-
-  :hover {
-    cursor: pointer;
-  }
-
-  :active {
-    opacity: 0.8;
-  }
+  cursor: pointer;
 `;

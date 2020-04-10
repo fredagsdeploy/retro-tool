@@ -2,6 +2,7 @@ import React from "react";
 import { TokensDiv } from "./Tokens";
 import { useSocket } from "./SocketContext";
 import { DragDuplicated } from "./DragDuplicated";
+import { noteColors } from "./colors";
 
 export const TokensPile = () => {
   const socket = useSocket();
@@ -14,42 +15,20 @@ export const TokensPile = () => {
     <div
       style={{
         position: "absolute",
-        left: "50%",
-        top: "30px",
+        left: "10px",
+        top: "150px",
         display: "flex",
       }}
     >
-      <DragDuplicated
-        onDrop={({ x, y }) => sendCreateNewSocket("tomato", x, y)}
-      >
-        <TokensDiv color="tomato" position="relative" />
-      </DragDuplicated>
-      <DragDuplicated onDrop={({ x, y }) => sendCreateNewSocket("green", x, y)}>
-        <TokensDiv color="green" position="relative" />
-      </DragDuplicated>
-      <DragDuplicated onDrop={({ x, y }) => sendCreateNewSocket("blue", x, y)}>
-        <TokensDiv color="blue" position="relative" />
-      </DragDuplicated>
-      <DragDuplicated
-        onDrop={({ x, y }) => sendCreateNewSocket("yellowgreen", x, y)}
-      >
-        <TokensDiv color="yellowgreen" position="relative" />
-      </DragDuplicated>
-      <DragDuplicated
-        onDrop={({ x, y }) => sendCreateNewSocket("goldenrod", x, y)}
-      >
-        <TokensDiv color="goldenrod" position="relative" />
-      </DragDuplicated>
-      <DragDuplicated
-        onDrop={({ x, y }) => sendCreateNewSocket("rebeccapurple", x, y)}
-      >
-        <TokensDiv color="rebeccapurple" position="relative" />
-      </DragDuplicated>
-      <DragDuplicated
-        onDrop={({ x, y }) => sendCreateNewSocket("orangered", x, y)}
-      >
-        <TokensDiv color="orangered" position="relative" />
-      </DragDuplicated>
+      {noteColors.map((color) => (
+        <DragDuplicated
+          dragChild={<TokensDiv color={color} position="relative" />}
+          key={color}
+          onDrop={({ x, y }) => sendCreateNewSocket(color, x, y)}
+        >
+          <TokensDiv color={color} position="relative" />
+        </DragDuplicated>
+      ))}
     </div>
   );
 };
