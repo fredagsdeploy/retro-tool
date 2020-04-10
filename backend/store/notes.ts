@@ -30,11 +30,19 @@ export const createNotesStore = () => {
     return newNote;
   };
 
-  const createNote = ({ x, y, content }: Pick<Note, "x" | "y" | "content">) => {
+  const createNote = ({
+    x,
+    y,
+    content,
+    ownedBy,
+    secret,
+  }: Omit<Note, "id" | "color" | "z">) => {
     const id = uuid.v4();
 
     const newNote: Note = {
+      ownedBy,
       content,
+      secret,
       color: generateRandomColor(),
       id,
       x,

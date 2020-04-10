@@ -10,7 +10,11 @@ import { useSocket } from "./SocketContext";
 import { useSocketEvent } from "./hooks/useSocketEvent";
 import { useDragContextState } from "./hooks/useDragContextState";
 
-export const Notes: React.FC = () => {
+interface Props {
+  userId: string;
+}
+
+export const Notes: React.FC<Props> = ({ userId }) => {
   const [notes, setNotes] = useState<Record<string, Note>>({});
   const [noteCreatedId, setNoteCreatedId] = useState<string | null>(null);
 
@@ -64,6 +68,7 @@ export const Notes: React.FC = () => {
         ...notes[noteId],
         x,
         y,
+        z: 9999999999,
       },
     }));
     socket.emit("drop-note", {
@@ -73,54 +78,98 @@ export const Notes: React.FC = () => {
     });
   };
 
+  const togglePrivate = (noteId: string, secret: boolean) => {
+    setNotes((notes) => ({
+      ...notes,
+      [noteId]: {
+        ...notes[noteId],
+        secret: !secret,
+      },
+    }));
+    socket.emit("update-note", {
+      id: noteId,
+      secret: !secret,
+    });
+  };
+
   return (
     <>
-      {Object.values(notes).map((note) => (
-        <Draggable
-          key={note.id}
-          handle=".handle"
-          position={{ x: note.x, y: note.y }}
-          onStart={() => setItem(note)}
-          onDrag={(event, pos) => handleDrag(pos, note.id)}
-          onStop={(event, pos) => handleDrop(pos, note.id)}
-        >
-          <div style={{ position: "absolute", zIndex: note.z }}>
-            <NoteDiv color={note.color}>
-              <NotesContent
-                style={{
-                  color: getTextColorForBackground(note.color),
-                }}
-              >
-                <EditableText
-                  multiline={true}
+      {Object.values(notes).map((note) => {
+        const ownedByMe = note.ownedBy === userId;
+        const shouldShowText = ownedByMe || !note.secret;
+
+        const textColor = shouldShowText
+          ? getTextColorForBackground(note.color)
+          : "transparent";
+
+        return (
+          <Draggable
+            key={note.id}
+            handle=".handle"
+            position={{ x: note.x, y: note.y }}
+            onStart={() => setItem(note)}
+            onDrag={(event, pos) => handleDrag(pos, note.id)}
+            onStop={(event, pos) => handleDrop(pos, note.id)}
+          >
+            <div style={{ position: "absolute", zIndex: note.z }}>
+              <NoteDiv color={note.color}>
+                <NotesContent
                   style={{
-                    wordBreak: "break-all",
-                    padding: "0 1rem 1rem"
+                    color: textColor,
                   }}
-                  initialEdit={noteCreatedId === note.id}
-                  inputStyle={{
-                    maxWidth: "100%",
-                    margin: 0,
-                    padding: 0,
-                    backgroundColor: "transparent",
-                    border: 0,
-                    fontSize: "inherit",
-                    color: getTextColorForBackground(note.color),
-                    fontFamily: '"Patrick Hand", cursive',
-                  }}
-                  onTextChanged={(content) => {
-                    socket.emit("update-note-content", {
-                      id: note.id,
-                      content,
-                    });
-                  }}
-                  value={note.content}
-                />
-              </NotesContent>
-            </NoteDiv>
-          </div>
-        </Draggable>
-      ))}
+                >
+                  <EditableText
+                    multiline={true}
+                    style={{
+                      wordBreak: "break-word",
+                      padding: "0 1rem 1rem",
+                    }}
+                    initialEdit={noteCreatedId === note.id}
+                    inputStyle={{
+                      maxWidth: "100%",
+                      margin: 0,
+                      padding: 0,
+                      backgroundColor: "transparent",
+                      border: 0,
+                      fontSize: "inherit",
+                      color: textColor,
+                      fontFamily: '"Patrick Hand", cursive',
+                    }}
+                    onTextChanged={(content) => {
+                      setNotes((notes) => ({
+                        ...notes,
+                        [note.id]: {
+                          ...notes[note.id],
+                          content,
+                        },
+                      }));
+                      socket.emit("update-note", {
+                        id: note.id,
+                        content,
+                      });
+                    }}
+                    value={note.content}
+                  />
+                </NotesContent>
+              </NoteDiv>
+              {note.ownedBy === userId && (
+                <div>
+                  <input
+                    type="checkbox"
+                    checked={!!note.secret}
+                    style={{
+                      position: "absolute",
+                      top: 0,
+                      right: 0,
+                    }}
+                    onChange={() => togglePrivate(note.id, note.secret)}
+                  />
+                </div>
+              )}
+            </div>
+          </Draggable>
+        );
+      })}
     </>
   );
 };
@@ -135,9 +184,12 @@ export const NoteDiv: React.FC<NoteProps> = ({
   className,
   children,
 }) => (
-  <NoteDivStyle style={{
-    backgroundColor: color
-  }} className={className}>
+  <NoteDivStyle
+    style={{
+      backgroundColor: color,
+    }}
+    className={className}
+  >
     <Pushpin className="handle" color={color} />
     {children}
   </NoteDivStyle>
@@ -147,7 +199,7 @@ export const NoteDivStyle = styled.div`
   transition: transform 50ms linear;
   color: white;
   width: 140px;
-  box-shadow: 0 4px 8px 2px rgba(0,0,0,0.2);
+  box-shadow: 0 4px 8px 2px rgba(0, 0, 0, 0.2);
   font-family: "Patrick Hand", cursive;
   font-size: 18px;
   align-items: center;

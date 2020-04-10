@@ -32,6 +32,13 @@ io.on("connection", (socket) => {
   const id = uuid.v4();
   const name = generateUniqueName();
 
+  const user = {
+    id,
+    name,
+  };
+
+  socket.emit("hello", user);
+
   socket.on("mouse", (event) => {
     const { x, y } = event;
     socket.broadcast.volatile.emit("mouse", { x, y, id, name });
@@ -94,6 +101,7 @@ io.on("connection", (socket) => {
 
   socket.on("create-note", (event: Note) => {
     const newNote = notes.createNote({
+      ownedBy: user.id,
       content: `crap\n // ${name} `,
       ...event,
     });
@@ -114,8 +122,8 @@ io.on("connection", (socket) => {
       io.emit("update-note", newNote);
     }
   });
-  socket.on("update-note-content", ({ id, content }: Note) => {
-    const newNote = notes.updateNote(id, { content });
+  socket.on("update-note", (note: Note) => {
+    const newNote = notes.updateNote(note.id, note);
     if (newNote) {
       io.emit("update-note", newNote);
     }

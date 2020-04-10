@@ -1,4 +1,6 @@
 export interface Note {
+  ownedBy: string;
+  secret: boolean;
   content: string;
   color: string;
   id: string;
@@ -20,4 +22,9 @@ export interface Token {
   id: string;
   x: number;
   y: number;
+}
+
+export interface User {
+  id: string;
+  name: string;
 }
