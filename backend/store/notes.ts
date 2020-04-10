@@ -22,7 +22,7 @@ export const createNotesStore = () => {
     const newNote: Note = {
       ...oldNote,
       ...newParams,
-      z: largestZ++
+      z: largestZ++,
     };
 
     notes.set(id, newNote);
@@ -39,7 +39,7 @@ export const createNotesStore = () => {
       id,
       x,
       y,
-      z: largestZ++
+      z: largestZ++,
     };
 
     notes.set(id, newNote);
@@ -54,6 +54,6 @@ export const createNotesStore = () => {
   return {
     createNote,
     updateNote,
-    deleteNote
+    deleteNote,
   };
 };

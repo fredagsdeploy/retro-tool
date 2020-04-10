@@ -26,16 +26,16 @@ const generateUniqueName = () => {
   return name;
 };
 
-io.on("connection", socket => {
+io.on("connection", (socket) => {
   const id = uuid.v4();
   const name = generateUniqueName();
 
-  socket.on("mouse", event => {
+  socket.on("mouse", (event) => {
     const { x, y } = event;
     socket.broadcast.volatile.emit("mouse", { x, y, id, name });
   });
 
-  socket.on("create-token", event => {
+  socket.on("create-token", (event) => {
     const newToken = tokens.createToken(event);
     io.emit("update-token", newToken);
   });
@@ -82,7 +82,7 @@ io.on("connection", socket => {
   socket.on("create-note", (event: Note) => {
     const newNote = notes.createNote({
       content: `crap\n // ${name} `,
-      ...event
+      ...event,
     });
     socket.broadcast.emit("update-note", newNote);
     socket.emit("create-note", newNote);

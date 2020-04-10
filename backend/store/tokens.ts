@@ -16,7 +16,7 @@ export const createTokensStore = () => {
 
     const newToken: Token = {
       ...oldToken,
-      ...newParams
+      ...newParams,
     };
 
     Tokens.set(id, newToken);
@@ -31,7 +31,7 @@ export const createTokensStore = () => {
       color,
       id,
       x,
-      y
+      y,
     };
 
     Tokens.set(id, newToken);
