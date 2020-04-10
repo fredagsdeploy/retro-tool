@@ -6,8 +6,7 @@ const getEndpointUrl = () => {
 
   const protocol = secureProtocol ? "wss" : "ws";
   const port = portString ?? window.location.port;
-
-  return `${protocol}:${window.location.hostname}:${port}`;
+  return `${protocol}://${window.location.hostname}:${port}`;
 };
 
 const endpoint = getEndpointUrl();

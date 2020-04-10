@@ -7,13 +7,8 @@ import { Tokens } from "./Tokens";
 import { NoteBlock } from "./NoteBlock";
 import { AddText } from "./AddText";
 import { TokensPile } from "./TokensPile";
-import { SocketContextProvider, useSocket } from "./SocketContext";
-import { FaTrash } from "react-icons/fa";
-import styled from "styled-components";
-import {
-  DragContextProvider,
-  useDragContextState,
-} from "./hooks/useDragContextState";
+import { SocketContextProvider } from "./SocketContext";
+import { DragContextProvider } from "./hooks/useDragContextState";
 import { TrashCan } from "./TrashCan";
 
 interface Props {}

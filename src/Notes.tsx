@@ -1,9 +1,10 @@
 import { throttle } from "lodash-es";
-import React, { CSSProperties, useCallback, useState } from "react";
+import React, { useCallback, useState } from "react";
 import Draggable, { DraggableData } from "react-draggable";
 import styled from "styled-components";
 import { Note } from "../backend/interface";
 import { getTextColorForBackground } from "./colors";
+import { Pushpin } from "./Pushpin";
 import { EditableText } from "./EditableText";
 import { useSocket } from "./SocketContext";
 import { useSocketEvent } from "./hooks/useSocketEvent";
@@ -84,11 +85,7 @@ export const Notes: React.FC = () => {
           onStop={(event, pos) => handleDrop(pos, note.id)}
         >
           <div style={{ position: "absolute", zIndex: note.z }}>
-            <NoteDiv
-              style={{
-                backgroundColor: note.color,
-              }}
-            >
+            <NoteDiv color={note.color}>
               <NotesContent
                 style={{
                   color: getTextColorForBackground(note.color),
@@ -98,6 +95,7 @@ export const Notes: React.FC = () => {
                   multiline={true}
                   style={{
                     wordBreak: "break-all",
+                    padding: "0 1rem 1rem"
                   }}
                   initialEdit={noteCreatedId === note.id}
                   inputStyle={{
@@ -128,21 +126,19 @@ export const Notes: React.FC = () => {
 };
 
 interface NoteProps {
-  style?: CSSProperties;
+  color: string;
   className?: string;
 }
 
 export const NoteDiv: React.FC<NoteProps> = ({
-  style,
+  color,
   className,
   children,
 }) => (
-  <NoteDivStyle style={style} className={className}>
-    <GrabBar className="handle">
-      <GrabHandle />
-      <GrabHandle />
-      <GrabHandle />
-    </GrabBar>
+  <NoteDivStyle style={{
+    backgroundColor: color
+  }} className={className}>
+    <Pushpin className="handle" color={color} />
     {children}
   </NoteDivStyle>
 );
@@ -150,30 +146,15 @@ export const NoteDiv: React.FC<NoteProps> = ({
 export const NoteDivStyle = styled.div`
   transition: transform 50ms linear;
   color: white;
-  width: 120px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  width: 140px;
+  box-shadow: 0 4px 8px 2px rgba(0,0,0,0.2);
   font-family: "Patrick Hand", cursive;
   font-size: 18px;
+  align-items: center;
+  display: flex;
+  flex-direction: column;
 `;
 
 const NotesContent = styled.div`
-  padding: 0 20px 20px 20px;
-  width: 120px;
-`;
-
-const GrabHandle = styled.div`
-  height: 4px;
-  margin-bottom: 2px;
-  background-color: rgba(0, 0, 0, 0.15);
-  border-radius: 2px;
-`;
-
-const GrabBar = styled.div`
-  padding: 5px 10px;
-  :hover {
-    cursor: move;
-  }
-  :active {
-    cursor: grab;
-  }
+  width: 100%;
 `;
