@@ -1,5 +1,4 @@
 import * as uuid from "uuid";
-import { generateRandomColor } from "./notes";
 import { Token } from "../interface";
 
 export const createTokensStore = () => {
@@ -40,13 +39,13 @@ export const createTokensStore = () => {
     return newToken;
   };
 
-  const deleteToken = (id: string) => {
+  const deleteToken = (id: string): boolean => {
     return Tokens.delete(id);
   };
 
   return {
     createToken,
     updateToken,
-    deleteToken
+    deleteToken,
   };
 };

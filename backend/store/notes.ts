@@ -1,11 +1,9 @@
 import * as uuid from "uuid";
 import { Note } from "../interface";
-import { padStart } from "lodash-es";
+import { padStart } from "lodash";
 
 export const generateRandomColor = () =>
-  "#" + padStart(Math.random()
-    .toString(16)
-    .substring(6), 6, '0');
+  "#" + padStart(Math.random().toString(16).substr(2, 6), 6, "0");
 
 export const createNotesStore = () => {
   let largestZ = 0;

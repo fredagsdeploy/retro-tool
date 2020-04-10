@@ -61,6 +61,12 @@ io.on("connection", socket => {
     }
   });
 
+  socket.on("delete-token", (token: Token) => {
+    if (tokens.deleteToken(token.id)) {
+      io.emit("delete-token", token.id);
+    }
+  });
+
   socket.on("create-text", (event: Text) => {
     const newText = texts.createText(event);
     io.emit("update-text", newText);
