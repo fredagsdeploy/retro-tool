@@ -4,6 +4,7 @@ import Draggable, { DraggableData } from "react-draggable";
 import tinycolor from "tinycolor2";
 import { useSocketEvent } from "./hooks/useSocketEvent";
 import { useSocket } from "./SocketContext";
+import { useDragContextState } from "./hooks/useDragContextState";
 
 export interface Token {
   color: string;
@@ -36,6 +37,7 @@ export const TokensDiv = styled.div<TokensDivProps>`
 export const Tokens: React.FC = () => {
   const [tokens, setTokens] = useState<Record<string, Token>>({});
   const socket = useSocket();
+  const { setItem } = useDragContextState();
 
   useSocketEvent("update-token", ({ id, x, y, ...rest }: Token) => {
     setTokens((tokens) => ({
@@ -49,12 +51,17 @@ export const Tokens: React.FC = () => {
     }));
   });
 
+  useSocketEvent("delete-token", ({ id }: Token) => {
+    setTokens(({ [id]: a, ...tokens }) => tokens);
+  });
+
   return (
     <>
       {Object.values(tokens).map((token) => (
         <Draggable
           key={token.id}
           position={{ x: token.x, y: token.y }}
+          onStart={() => setItem(token)}
           onDrag={(e, { x, y }: DraggableData) => {
             socket.emit("move-token", {
               id: token.id,

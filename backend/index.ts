@@ -61,9 +61,13 @@ io.on("connection", (socket) => {
     }
   });
 
-  socket.on("delete-token", (token: Token) => {
-    if (tokens.deleteToken(token.id)) {
-      io.emit("delete-token", token.id);
+  socket.on("delete", ({ id }: { id: string }) => {
+    if (tokens.deleteToken(id)) {
+      io.emit("delete-token", { id });
+    } else if (texts.deleteText(id)) {
+      io.emit("delete-text", { id });
+    } else if (notes.deleteNote(id)) {
+      io.emit("delete-note", { id });
     }
   });
 

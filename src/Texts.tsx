@@ -25,25 +25,29 @@ export const Texts: React.FC = () => {
   const socket = useSocket();
 
   useSocketEvent("update-text", ({ id, x, y, ...rest }: Text) => {
-    setTexts(texts => ({
+    setTexts((texts) => ({
       ...texts,
       [id]: {
         ...rest,
         id,
         x: x * window.innerWidth,
-        y: y * window.innerHeight
-      }
+        y: y * window.innerHeight,
+      },
     }));
+  });
+
+  useSocketEvent("delete-text", ({ id }: Text) => {
+    setTexts(({ [id]: a, ...texts }) => texts);
   });
 
   return (
     <>
-      {Object.values(texts).map(text => (
+      {Object.values(texts).map((text) => (
         <TextsDiv
           key={text.id}
           style={{
             top: text.y,
-            left: text.x
+            left: text.x,
           }}
         >
           <EditableText
@@ -54,12 +58,12 @@ export const Texts: React.FC = () => {
               border: 0,
               color: getTextColorForBackground("#222"),
               fontSize: 30,
-              fontFamily: '"Patrick Hand", cursive'
+              fontFamily: '"Patrick Hand", cursive',
             }}
-            onTextChanged={content => {
+            onTextChanged={(content) => {
               socket.emit("update-text-content", {
                 id: text.id,
-                content
+                content,
               });
             }}
             value={text.content}

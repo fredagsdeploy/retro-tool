@@ -7,9 +7,14 @@ import { Tokens } from "./Tokens";
 import { NoteBlock } from "./NoteBlock";
 import { AddText } from "./AddText";
 import { TokensPile } from "./TokensPile";
-import { SocketContextProvider } from "./SocketContext";
+import { SocketContextProvider, useSocket } from "./SocketContext";
 import { FaTrash } from "react-icons/fa";
 import styled from "styled-components";
+import {
+  DragContextProvider,
+  useDragContextState,
+} from "./hooks/useDragContextState";
+import { TrashCan } from "./TrashCan";
 
 interface Props {}
 
@@ -34,44 +39,16 @@ export const App: React.FC<Props> = () => {
 
   return (
     <SocketContextProvider value={socketRef.current}>
-      <NoteBlock />
-      <AddText />
-      <TokensPile />
-      <Notes />
-      <Texts />
-      <Tokens />
-      <MouseCursors />
-      <TrashCanDiv
-        onMouseUp={() => {
-          console.log("TRASH THE CRAP");
-        }}
-      >
-        <FaTrash className="trash" />
-      </TrashCanDiv>
+      <DragContextProvider>
+        <NoteBlock />
+        <AddText />
+        <TokensPile />
+        <Notes />
+        <Texts />
+        <Tokens />
+        <MouseCursors />
+        <TrashCan />
+      </DragContextProvider>
     </SocketContextProvider>
   );
 };
-
-const TrashCanDiv = styled.div`
-  position: fixed;
-  z-index: 100;
-  bottom: 100px;
-  left: 50%;
-  width: 200px;
-  height: 200px;
-
-  .trash {
-    width: 72px;
-    height: 72px;
-    position: relative;
-    transition: transform 100ms ease-in-out;
-  }
-
-  :hover {
-    bottom: 110px;
-
-    .trash {
-      transform: scale(1.2) translateY(-30px);
-    }
-  }
-`;
