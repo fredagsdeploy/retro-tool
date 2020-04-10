@@ -1,5 +1,4 @@
 ![Build & Deploy frontend](https://github.com/fredagsdeploy/retro-tool/workflows/Docker%20Image%20CI%20for%20frontend/badge.svg)
-
 ![Build & Deploy backend](https://github.com/fredagsdeploy/retro-tool/workflows/Docker%20Image%20CI%20for%20backend/badge.svg?branch=master)
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
