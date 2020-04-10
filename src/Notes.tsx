@@ -18,7 +18,7 @@ interface Props {
 export const Notes: React.FC<Props> = ({ userId }) => {
   const [notes, setNotes] = useState<Record<string, Note>>({});
   const [noteCreatedId, setNoteCreatedId] = useState<string | null>(null);
-
+  const [hoveringEye, setHoveringEye] = useState(false);
   useSocketEvent("update-note", ({ id, x, y, ...rest }: Note) => {
     setNotes((notes) => ({
       ...notes,
@@ -155,7 +155,16 @@ export const Notes: React.FC<Props> = ({ userId }) => {
                 </NotesContent>
                 {note.ownedBy === userId && (
                   <div onClick={() => togglePrivate(note.id, note.secret)}>
-                    {note.secret ? <NotVisibleIcon /> : <VisibleIcon />}
+                    <div
+                      onMouseEnter={() => setHoveringEye(true)}
+                      onMouseLeave={() => setHoveringEye(false)}
+                    >
+                      {note.secret || hoveringEye ? (
+                        <NotVisibleIcon />
+                      ) : (
+                        <VisibleIcon />
+                      )}
+                    </div>
                   </div>
                 )}
               </NoteDiv>
@@ -230,5 +239,9 @@ const NotVisibleIcon = styled(FaEyeSlash)`
 
   :hover {
     cursor: pointer;
+  }
+
+  :active {
+    opacity: 0.8;
   }
 `;
