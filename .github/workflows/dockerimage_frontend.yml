@@ -20,5 +20,5 @@ jobs:
         DOCKER_PASS: ${{ secrets.DOCKER_PASS }}
       run: docker login -u $DOCKER_USER -p $DOCKER_PASS
     - name: Push image to DockerHub
-      run: docker push fredagsdeploy/retro-frontend:latest
+      run: docker push fredagsdeploy/retro-tool-frontend:latest
       
