@@ -1,11 +1,5 @@
 import { throttle } from "lodash-es";
-import React, {
-  CSSProperties,
-  useCallback,
-  useEffect,
-  useState,
-  useRef
-} from "react";
+import React, { CSSProperties, useCallback, useState } from "react";
 import Draggable, { DraggableData } from "react-draggable";
 import styled from "styled-components";
 import { Note } from "../backend/interface";

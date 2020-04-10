@@ -16,5 +16,5 @@ export const useSocketEvent = <T extends Function>(
     return () => {
       socket.off(event, cb);
     };
-  }, [event, socket]);
+  }, [event, socket, latestCallback]);
 };

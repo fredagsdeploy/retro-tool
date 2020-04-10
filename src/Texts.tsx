@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import { getTextColorForBackground } from "./colors";
 import { EditableText } from "./EditableText";

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 
 import { throttle } from "lodash-es";
 import { useSocketEvent } from "./hooks/useSocketEvent";

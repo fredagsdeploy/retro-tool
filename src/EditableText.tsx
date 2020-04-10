@@ -1,4 +1,4 @@
-import React, { CSSProperties, useState, useEffect, useRef } from "react";
+import React, { CSSProperties, useEffect, useRef, useState } from "react";
 
 interface Props {
   style?: CSSProperties;
