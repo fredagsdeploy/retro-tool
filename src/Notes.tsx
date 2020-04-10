@@ -9,6 +9,7 @@ import { EditableText } from "./EditableText";
 import { useSocket } from "./SocketContext";
 import { useSocketEvent } from "./hooks/useSocketEvent";
 import { useDragContextState } from "./hooks/useDragContextState";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 interface Props {
   userId: string;
@@ -98,9 +99,14 @@ export const Notes: React.FC<Props> = ({ userId }) => {
         const ownedByMe = note.ownedBy === userId;
         const shouldShowText = ownedByMe || !note.secret;
 
-        const textColor = shouldShowText
-          ? getTextColorForBackground(note.color)
-          : "transparent";
+        const visibleText = {
+          color: getTextColorForBackground(note.color),
+        };
+        const blurryText = {
+          color: "transparent",
+          textShadow: `0 0 10px ${getTextColorForBackground(note.color)}`,
+        };
+        const textStyle = shouldShowText ? visibleText : blurryText;
 
         return (
           <Draggable
@@ -113,11 +119,7 @@ export const Notes: React.FC<Props> = ({ userId }) => {
           >
             <div style={{ position: "absolute", zIndex: note.z }}>
               <NoteDiv color={note.color}>
-                <NotesContent
-                  style={{
-                    color: textColor,
-                  }}
-                >
+                <NotesContent style={textStyle}>
                   <EditableText
                     multiline={true}
                     style={{
@@ -126,13 +128,13 @@ export const Notes: React.FC<Props> = ({ userId }) => {
                     }}
                     initialEdit={noteCreatedId === note.id}
                     inputStyle={{
+                      ...textStyle,
                       maxWidth: "100%",
                       margin: 0,
                       padding: 0,
                       backgroundColor: "transparent",
                       border: 0,
                       fontSize: "inherit",
-                      color: textColor,
                       fontFamily: '"Patrick Hand", cursive',
                     }}
                     onTextChanged={(content) => {
@@ -151,21 +153,12 @@ export const Notes: React.FC<Props> = ({ userId }) => {
                     value={note.content}
                   />
                 </NotesContent>
+                {note.ownedBy === userId && (
+                  <div onClick={() => togglePrivate(note.id, note.secret)}>
+                    {note.secret ? <NotVisibleIcon /> : <VisibleIcon />}
+                  </div>
+                )}
               </NoteDiv>
-              {note.ownedBy === userId && (
-                <div>
-                  <input
-                    type="checkbox"
-                    checked={!!note.secret}
-                    style={{
-                      position: "absolute",
-                      top: 0,
-                      right: 0,
-                    }}
-                    onChange={() => togglePrivate(note.id, note.secret)}
-                  />
-                </div>
-              )}
             </div>
           </Draggable>
         );
@@ -198,6 +191,7 @@ export const NoteDiv: React.FC<NoteProps> = ({
 export const NoteDivStyle = styled.div`
   transition: transform 50ms linear;
   color: white;
+  min-height: 100px;
   width: 140px;
   box-shadow: 0 4px 8px 2px rgba(0, 0, 0, 0.2);
   font-family: "Patrick Hand", cursive;
@@ -209,4 +203,32 @@ export const NoteDivStyle = styled.div`
 
 const NotesContent = styled.div`
   width: 100%;
+`;
+
+const VisibleIcon = styled(FaEye)`
+  opacity: 0;
+  color: black;
+  position: absolute;
+  top: 3px;
+  right: 3px;
+
+  :hover {
+    cursor: pointer;
+  }
+
+  ${NoteDivStyle}:hover & {
+    opacity: 1;
+  }
+`;
+
+const NotVisibleIcon = styled(FaEyeSlash)`
+  opacity: 1;
+  color: black;
+  position: absolute;
+  top: 3px;
+  right: 3px;
+
+  :hover {
+    cursor: pointer;
+  }
 `;
