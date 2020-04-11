@@ -103,6 +103,7 @@ io.on("connection", (socket) => {
     const newNote = notes.createNote({
       ownedBy: user.id,
       content: `crap\n // ${name} `,
+      secret: true,
       ...event,
     });
     socket.broadcast.emit("update-note", newNote);
