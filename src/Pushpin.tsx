@@ -42,14 +42,17 @@ const PushpinContainer = styled.div<StyledProps>`
 `;
 
 export const Pushpin = ({ className, color }: Props) => {
-  const baseColor = tinycolor(color).darken(10).toHexString();
-  const darkColor = tinycolor(color).darken(20).toHexString();
+  const colorInstance = tinycolor(color);
+  const pinColor = colorInstance.isLight()
+    ? colorInstance.darken(10).toHexString()
+    : colorInstance.lighten(20).toHexString();
+  const pinShadeColor = colorInstance.darken(10).toHexString();
   return (
     <PushpinContainer
       className={className}
-      color={getGradient(baseColor, darkColor)}
+      color={getGradient(pinColor, pinShadeColor)}
     >
-      <PushpinHead color={baseColor} />
+      <PushpinHead color={pinColor} />
     </PushpinContainer>
   );
 };
