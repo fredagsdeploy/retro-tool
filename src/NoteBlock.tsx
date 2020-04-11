@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { useSocket } from "./SocketContext";
 import { DragDuplicated } from "./DragDuplicated";
 import { Pushpin } from "./Pushpin";
-import { padStart, range, drop, initial, last } from "lodash-es";
+import { padStart, range, drop } from "lodash-es";
 
 interface StyledProps {
   color: string;

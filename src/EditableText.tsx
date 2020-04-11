@@ -1,5 +1,4 @@
 import React, { CSSProperties, useState } from "react";
-import { EditTextInput } from "./EditTextInput";
 
 interface Props {
   style?: CSSProperties;

@@ -27,7 +27,6 @@ export const DragDuplicated: React.FC<Props> = ({
           const element = ref.current;
           if (element) {
             const { left, top } = element.getBoundingClientRect();
-            const elementY = element.offsetTop;
             console.log("element", left, top);
             startPos.current = {
               x: event.clientX - left,

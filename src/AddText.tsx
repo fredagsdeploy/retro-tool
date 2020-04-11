@@ -121,8 +121,8 @@ export const AddText: React.FC = () => {
 
 const StyledT = styled.span`
   position: absolute;
-  left: 10px;
-  top: 300px;
+  left: 70px;
+  top: 220px;
   font-size: 72px;
   font-family: Times;
   color: ${getTextColorForBackground("#222")};

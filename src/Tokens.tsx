@@ -20,6 +20,7 @@ interface TokensDivProps {
 
 export const TokensDiv = styled.div<TokensDivProps>`
   background-color: ${(props: TokensDivProps) => props.color};
+  box-shadow: inset 0 0 4px 0 rgba(0,0,0,0.5);
   position: ${(props: TokensDivProps) => props.position || "absolute"};
   width: 30px;
   height: 30px;

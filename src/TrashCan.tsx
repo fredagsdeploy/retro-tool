@@ -33,6 +33,7 @@ const TrashCanDiv = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+  border: 3px dashed black;
 
   .trash {
     width: 72px;
@@ -43,7 +44,7 @@ const TrashCanDiv = styled.div`
 
   :hover {
     .trash {
-      transform: scale(1.2) translateY(-30px);
+      transform: scale(1.2);
     }
   }
 `;

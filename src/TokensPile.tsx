@@ -15,9 +15,12 @@ export const TokensPile = () => {
     <div
       style={{
         position: "absolute",
-        left: "10px",
+        left: "30px",
         top: "150px",
         display: "flex",
+        width: "120px",
+        flexWrap: "wrap",
+        justifyContent: "center",
       }}
     >
       {noteColors.map((color) => (
