@@ -17,8 +17,12 @@ interface Props {}
 
 export const App: React.FC<Props> = () => {
   const [connected, setConnected] = useState<boolean>(false);
+  const [connectedToRetroSpace, setConnectedToRetroSpace] = useState<boolean>(
+    false
+  );
   const [user, setUser] = useState<User | null>(null);
   const socketRef = useRef<SocketIOClient.Socket | null>(null);
+  const retroSpaceSocketRef = useRef<SocketIOClient.Socket | null>(null);
 
   const urlParams = new URLSearchParams(window.location.hash.substr(1));
   const [sessionId, setSessionId] = useState<string | null>(
@@ -43,6 +47,27 @@ export const App: React.FC<Props> = () => {
     };
   }, []);
 
+  useEffect(() => {
+    if (sessionId === null) {
+      return;
+    }
+    const { socket, cleanup } = connectSocket(sessionId);
+    const callback = ({ id, name }: User) => {
+      console.log("hello retro space", { id, name });
+      setUser({ id, name });
+    };
+    socket.on("hello", callback);
+    retroSpaceSocketRef.current = socket;
+
+    setConnectedToRetroSpace(true);
+
+    return () => {
+      socket.off("hello", callback);
+      setConnected(false);
+      cleanup();
+    };
+  }, [sessionId]);
+
   if (!connected || !socketRef.current || !user) {
     return null;
   }
@@ -50,16 +75,17 @@ export const App: React.FC<Props> = () => {
   if (sessionId === null) {
     return (
       <SocketContextProvider value={socketRef.current}>
-        <CreateOrJoinPage
-          sessionId={sessionId}
-          setValidatedSessionId={setSessionId}
-        />
+        <CreateOrJoinPage sessionId={sessionId} setSessionId={setSessionId} />
       </SocketContextProvider>
     );
   }
 
+  if (!connectedToRetroSpace || !retroSpaceSocketRef.current || !user) {
+    return null;
+  }
+
   return (
-    <SocketContextProvider value={socketRef.current}>
+    <SocketContextProvider value={retroSpaceSocketRef.current}>
       <DragContextProvider>
         <NoteBlock />
         <AddText />

@@ -11,8 +11,8 @@ const getEndpointUrl = () => {
 
 const endpoint = getEndpointUrl();
 
-export const connectSocket = () => {
-  const socket = io(endpoint);
+export const connectSocket = (namespace: string | undefined = undefined) => {
+  const socket = io(namespace ? `${endpoint}/${namespace}` : endpoint);
 
   return {
     socket,

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import { useSocketEvent } from "./hooks/useSocketEvent";
 import { SessionIdPayload } from "../backend/interface";
@@ -6,24 +6,21 @@ import { useSocket } from "./SocketContext";
 
 interface Props {
   sessionId: string | null;
-  setValidatedSessionId: (sessionId: string) => void;
+  setSessionId: (sessionId: string) => void;
 }
 
-export const CreateOrJoinPage: React.FC<Props> = ({
-  setValidatedSessionId,
-}) => {
-  const [sessionId, setSessionId] = useState<string | null>(null);
-
+export const CreateOrJoinPage: React.FC<Props> = ({ setSessionId }) => {
+  const [sessionIdToJoin, setSessionIdToJoin] = useState<string | null>(null);
+  console.log("Create or join page");
   const socket = useSocket();
-  useSocketEvent("session/join/accept", ({ sessionId }: SessionIdPayload) => {
-    console.log("join-accept", sessionId);
-    document.location.hash = `sessionId=${sessionId}`;
-  });
 
-  useSocketEvent("session/create/accept", ({ sessionId }: SessionIdPayload) => {
-    setValidatedSessionId(sessionId);
+  const sessionIdReceivedFromBackend = ({ sessionId }: SessionIdPayload) => {
     document.location.hash = `sessionId=${sessionId}`;
-  });
+    setSessionId(sessionId);
+  };
+
+  useSocketEvent("session/join/accept", sessionIdReceivedFromBackend);
+  useSocketEvent("session/create/accept", sessionIdReceivedFromBackend);
 
   return (
     <Container>
@@ -38,12 +35,12 @@ export const CreateOrJoinPage: React.FC<Props> = ({
       <div style={{ marginTop: 30 }}>
         <RoomCodeInput
           type="text"
-          onChange={(e) => setSessionId(e.target.value)}
+          onChange={(e) => setSessionIdToJoin(e.target.value)}
         />
         <Button
           title="join"
           onPress={() => {
-            socket.emit("session/join/request", { sessionId });
+            socket.emit("session/join/request", { sessionId: sessionIdToJoin });
           }}
         />
       </div>
