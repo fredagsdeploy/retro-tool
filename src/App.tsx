@@ -85,17 +85,19 @@ export const App: React.FC<Props> = () => {
   }
 
   return (
-    <SocketContextProvider value={retroSpaceSocketRef.current}>
-      <DragContextProvider>
-        <NoteBlock />
-        <AddText />
-        <TokensPile />
-        <Notes userId={user.id} />
-        <Texts />
-        <Tokens />
-        <MouseCursors />
-        <TrashCan />
-      </DragContextProvider>
-    </SocketContextProvider>
+    <div style={{ overflow: "hidden" }}>
+      <SocketContextProvider value={retroSpaceSocketRef.current}>
+        <DragContextProvider>
+          <NoteBlock />
+          <AddText />
+          <TokensPile />
+          <Notes userId={user.id} />
+          <Texts />
+          <Tokens />
+          <MouseCursors />
+          <TrashCan />
+        </DragContextProvider>
+      </SocketContextProvider>
+    </div>
   );
 };

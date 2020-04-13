@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import { useSocketEvent } from "./hooks/useSocketEvent";
-import { SessionIdPayload } from "../backend/interface";
-import { useSocket } from "./SocketContext";
+import { useSocketEvent } from "../hooks/useSocketEvent";
+import { SessionIdPayload } from "../../backend/interface";
+import { useSocket } from "../SocketContext";
+import { CreateSessionSection } from "./CreateSessionSection";
+import { JoinSessionSection } from "./JoinSessionSection";
 
 interface Props {
   sessionId: string | null;
@@ -10,7 +12,7 @@ interface Props {
 }
 
 export const CreateOrJoinPage: React.FC<Props> = ({ setSessionId }) => {
-  const [sessionIdToJoin, setSessionIdToJoin] = useState<string | null>(null);
+  const [name, setName] = useState<string>("");
   console.log("Create or join page");
   const socket = useSocket();
 
@@ -19,31 +21,22 @@ export const CreateOrJoinPage: React.FC<Props> = ({ setSessionId }) => {
     setSessionId(sessionId);
   };
 
-  useSocketEvent("session/join/accept", sessionIdReceivedFromBackend);
-  useSocketEvent("session/create/accept", sessionIdReceivedFromBackend);
-
   return (
     <Container>
       <h1>Create a new room or join an existing one</h1>
-      <Button
-        title="create"
-        onPress={() => {
-          socket.emit("session/create/request");
+      <h2>Who are you? So the group can recognize you.</h2>
+      <TextInput type="text" onChange={(e) => setName(e.target.value)} />
+      <Space />
+      <CreateSessionSection
+        setSessionId={(sessionId) => {
+          sessionIdReceivedFromBackend({ sessionId });
         }}
       />
-
-      <div style={{ marginTop: 30 }}>
-        <RoomCodeInput
-          type="text"
-          onChange={(e) => setSessionIdToJoin(e.target.value)}
-        />
-        <Button
-          title="join"
-          onPress={() => {
-            socket.emit("session/join/request", { sessionId: sessionIdToJoin });
-          }}
-        />
-      </div>
+      <JoinSessionSection
+        setSessionId={(sessionId) => {
+          sessionIdReceivedFromBackend({ sessionId });
+        }}
+      />
     </Container>
   );
 };
@@ -58,17 +51,27 @@ const Container = styled.div`
   margin: 30px;
 `;
 
+export const Section = styled.div`
+  border-radius: 5px;
+  border: 3px solid white;
+  padding: 30px;
+  width: 30%;
+  min-width: 300px;
+  margin-top: 10px;
+`;
+
 interface ButtonProps {
   onPress: () => void;
   title: string;
 }
 
-const RoomCodeInput = styled.input`
+export const TextInput = styled.input`
   background-color: #222222;
   color: white;
   border: 3px solid white;
   border-radius: 10px;
   font-size: 22px;
+  max-width: 200px;
 `;
 
 export const Button: React.FC<ButtonProps> = ({ onPress, title }) => {
@@ -84,18 +87,26 @@ const StyledButton = styled.div`
   justify-content: center;
   border: 3px solid white;
   padding: 10px;
-  width: 100px;
+  min-width: 100px;
   border-radius: 100px;
 
   :hover {
     background-color: white;
     color: black;
-    font-size: 18px;
-    padding-bottom: 9px;
-    padding-top: 9px;
   }
 
   :active {
     opacity: 0.8;
   }
+`;
+
+export const SectionTitle = styled.div`
+  font-size: 28px;
+  border-bottom: 2px solid white;
+  margin-bottom: 30px;
+`;
+
+export const Space = styled.div`
+  width: 30px;
+  height: 30px;
 `;
