@@ -47,5 +47,6 @@ export const createTokensStore = () => {
     createToken,
     updateToken,
     deleteToken,
+    Tokens,
   };
 };

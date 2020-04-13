@@ -55,5 +55,6 @@ export const createTextsStore = () => {
     createText,
     updateText,
     deleteText,
+    texts,
   };
 };

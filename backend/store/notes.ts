@@ -64,5 +64,6 @@ export const createNotesStore = () => {
     createNote,
     updateNote,
     deleteNote,
+    notes,
   };
 };

@@ -12,10 +12,6 @@ console.log(`Hosting on port ${port}`);
 const io = socketio(port);
 const usedNames = new Set<string>();
 
-const notes = createNotesStore();
-const texts = createTextsStore();
-const tokens = createTokensStore();
-
 const generateUniqueName = () => {
   let name = "";
   do {
@@ -51,6 +47,10 @@ io.on("connection", (socket) => {
 });
 
 const createRetroSession = (sessionId: string) => {
+  const notes = createNotesStore();
+  const texts = createTextsStore();
+  const tokens = createTokensStore();
+
   const nameSpace = sessionId;
   io.of(nameSpace).on("connection", (socket) => {
     const id = uuid.v4();
@@ -61,6 +61,10 @@ const createRetroSession = (sessionId: string) => {
       name,
     };
     socket.emit("hello", user);
+
+    tokens.Tokens.forEach((t) => socket.emit("update-token", t));
+    notes.notes.forEach((n) => socket.emit("update-note", n));
+    texts.texts.forEach((t) => socket.emit("update-text", t));
 
     socket.on("mouse", (event) => {
       const { x, y } = event;
