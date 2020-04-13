@@ -33,3 +33,7 @@ export interface User {
 export interface SessionIdPayload {
   sessionId: string;
 }
+
+export interface SetNameRequest {
+  name: string;
+}

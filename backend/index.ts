@@ -2,7 +2,13 @@ import { sample } from "lodash";
 import socketio from "socket.io";
 import * as uuid from "uuid";
 import { allNames } from "./allNames";
-import { Note, SessionIdPayload, Text, Token } from "./interface";
+import {
+  Note,
+  SessionIdPayload,
+  SetNameRequest,
+  Text,
+  Token,
+} from "./interface";
 import { createNotesStore } from "./store/notes";
 import { createTextsStore } from "./store/texts";
 import { createTokensStore } from "./store/tokens";
@@ -65,6 +71,10 @@ const createRetroSession = (sessionId: string) => {
     tokens.Tokens.forEach((t) => socket.emit("update-token", t));
     notes.notes.forEach((n) => socket.emit("update-note", n));
     texts.texts.forEach((t) => socket.emit("update-text", t));
+
+    socket.on("session/user/set-name", ({ name }: SetNameRequest) => {
+      user.name = name;
+    });
 
     socket.on("mouse", (event) => {
       const { x, y } = event;
