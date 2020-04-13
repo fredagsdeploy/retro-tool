@@ -2,7 +2,7 @@ import { sample } from "lodash";
 import socketio from "socket.io";
 import * as uuid from "uuid";
 import { allNames } from "./allNames";
-import { Note, Text, Token } from "./interface";
+import { Note, SessionIdPayload, Text, Token } from "./interface";
 import { createNotesStore } from "./store/notes";
 import { createTextsStore } from "./store/texts";
 import { createTokensStore } from "./store/tokens";
@@ -38,6 +38,15 @@ io.on("connection", (socket) => {
   };
 
   socket.emit("hello", user);
+
+  socket.on("session/create/request", () => {
+    const sessionId = uuid.v4();
+    socket.emit("session/create/accept", { sessionId });
+  });
+
+  socket.on("session/join/request", ({ sessionId }: SessionIdPayload) => {
+    socket.emit("session/join/accept", { sessionId });
+  });
 
   socket.on("mouse", (event) => {
     const { x, y } = event;

@@ -11,6 +11,7 @@ import { SocketContextProvider } from "./SocketContext";
 import { DragContextProvider } from "./hooks/useDragContextState";
 import { TrashCan } from "./TrashCan";
 import { User } from "../backend/interface";
+import { CreateOrJoinPage } from "./CreateOrJoinPage";
 
 interface Props {}
 
@@ -18,6 +19,11 @@ export const App: React.FC<Props> = () => {
   const [connected, setConnected] = useState<boolean>(false);
   const [user, setUser] = useState<User | null>(null);
   const socketRef = useRef<SocketIOClient.Socket | null>(null);
+
+  const urlParams = new URLSearchParams(window.location.hash.substr(1));
+  const [sessionId, setSessionId] = useState<string | null>(
+    urlParams.get("sessionId")
+  );
 
   useEffect(() => {
     const { socket, cleanup } = connectSocket();
@@ -39,6 +45,17 @@ export const App: React.FC<Props> = () => {
 
   if (!connected || !socketRef.current || !user) {
     return null;
+  }
+
+  if (sessionId === null) {
+    return (
+      <SocketContextProvider value={socketRef.current}>
+        <CreateOrJoinPage
+          sessionId={sessionId}
+          setValidatedSessionId={setSessionId}
+        />
+      </SocketContextProvider>
+    );
   }
 
   return (
