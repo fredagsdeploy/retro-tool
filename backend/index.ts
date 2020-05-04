@@ -12,14 +12,25 @@ import {
 import { createNotesStore } from "./store/notes";
 import { createTextsStore } from "./store/texts";
 import { createTokensStore } from "./store/tokens";
+import adjectiveAdjectiveAnimal from "adjective-adjective-animal";
 
 let port = 1234;
 console.log(`Hosting on port ${port}`);
 const io = socketio(port);
 const usedNames = new Set<string>();
+const usedSessionIds = new Set<string>();
+
+const generateUniqueId = async () => {
+  let id = null;
+  do {
+    id = await adjectiveAdjectiveAnimal();
+  } while (usedSessionIds.has(id));
+  usedSessionIds.add(id);
+  return id;
+};
 
 const generateUniqueName = () => {
-  let name = "";
+  let name = null;
   do {
     if (usedNames.size === allNames.length) {
       usedNames.clear();
@@ -41,8 +52,8 @@ io.on("connection", (socket) => {
 
   socket.emit("hello", user);
 
-  socket.on("session/create/request", () => {
-    const sessionId = uuid.v4();
+  socket.on("session/create/request", async () => {
+    const sessionId = await generateUniqueId();
     createRetroSession(sessionId);
     socket.emit("session/create/accept", { sessionId });
   });
