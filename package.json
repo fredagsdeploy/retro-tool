@@ -28,7 +28,7 @@
     "socket.io-client": "^2.3.0",
     "styled-components": "^5.1.1",
     "tinycolor2": "^1.4.1",
-    "typescript": "3.8.3",
+    "typescript": "3.9.7",
     "uuid": "^7.0.2",
     "xstate": "4.8.0"
   },
