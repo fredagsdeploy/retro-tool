@@ -12,7 +12,7 @@
     "@types/react-beautiful-dnd": "^12.1.2",
     "@types/react-dom": "^16.9.0",
     "@types/socket.io-client": "^1.4.32",
-    "@types/styled-components": "^5.0.1",
+    "@types/styled-components": "^5.1.2",
     "@types/tinycolor2": "^1.4.2",
     "@types/uuid": "^7.0.2",
     "@xstate/react": "0.8.1",
