@@ -41,6 +41,8 @@ const generateUniqueName = () => {
   return name;
 };
 
+type PartialPick<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
+
 io.on("connection", (socket) => {
   const id = uuid.v4();
   const name = generateUniqueName();
@@ -148,16 +150,19 @@ const createRetroSession = (sessionId: string) => {
       }
     });
 
-    socket.on("create-note", (event: Note) => {
-      const newNote = notes.createNote({
-        ownedBy: user.id,
-        content: `crap\n // ${name} `,
-        secret: true,
-        ...event,
-      });
-      socket.broadcast.emit("update-note", newNote);
-      socket.emit("create-note", newNote);
-    });
+    socket.on(
+      "create-note",
+      (event: PartialPick<Note, "ownedBy" | "content" | "secret">) => {
+        const newNote = notes.createNote({
+          ownedBy: user.id,
+          content: `crap\n // ${name} `,
+          secret: true,
+          ...event,
+        });
+        socket.broadcast.emit("update-note", newNote);
+        socket.emit("create-note", newNote);
+      }
+    );
 
     socket.on("move-note", ({ id, x, y }: Note) => {
       const newNote = notes.updateNote(id, { x, y });
