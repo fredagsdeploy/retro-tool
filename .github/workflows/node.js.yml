@@ -24,11 +24,15 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
-    - run: yarn
+    - name: Fetch yarn for backend
+      run: yarn
       working-directory: ./backend
-    - run: yarn tsc --noEmit
+    - name: Build backend
+      run: yarn tsc --noEmit
       working-directory: ./backend
-    - run: yarn
-      working-directory: ./frontend
-    - run: yarn build
+    - name: Fetch yarn for frontend
+      run: yarn
+      working-directory: ./
+    - name: Build frontend
+      run: yarn build
       working-directory: ./frontend
