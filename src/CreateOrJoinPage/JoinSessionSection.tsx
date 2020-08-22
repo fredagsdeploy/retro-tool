@@ -1,6 +1,5 @@
-import React, { useRef, useState } from "react";
+import React, { useState } from "react";
 import { Button, Section, SectionTitle, Space, TextInput } from "./index";
-import styled from "styled-components";
 import { useSocketEvent } from "../hooks/useSocketEvent";
 import { SessionIdPayload } from "../../backend/interface";
 import { useSocket } from "../SocketContext";

@@ -1,8 +1,6 @@
-import React, { useState } from "react";
+import React from "react";
 import styled from "styled-components";
-import { useSocketEvent } from "../hooks/useSocketEvent";
 import { SessionIdPayload } from "../../backend/interface";
-import { useSocket } from "../SocketContext";
 import { CreateSessionSection } from "./CreateSessionSection";
 import { JoinSessionSection } from "./JoinSessionSection";
 
@@ -12,9 +10,8 @@ interface Props {
 }
 
 export const CreateOrJoinPage: React.FC<Props> = ({ setSessionId }) => {
-  const [name, setName] = useState<string>("");
-  console.log("Create or join page");
-  const socket = useSocket();
+  // const [name, setName] = useState<string>("");
+  // const socket = useSocket();
 
   const sessionIdReceivedFromBackend = ({ sessionId }: SessionIdPayload) => {
     document.location.hash = `sessionId=${sessionId}`;
@@ -25,7 +22,7 @@ export const CreateOrJoinPage: React.FC<Props> = ({ setSessionId }) => {
     <Container>
       <h1>Create a new room or join an existing one</h1>
       <h2>Who are you? So the group can recognize you.</h2>
-      <TextInput type="text" onChange={(e) => setName(e.target.value)} />
+      <TextInput type="text" />
       <Space />
       <CreateSessionSection
         setSessionId={(sessionId) => {
