@@ -35,4 +35,4 @@ jobs:
       working-directory: ./
     - name: Build frontend
       run: yarn build
-      working-directory: ./frontend
+      working-directory: ./
