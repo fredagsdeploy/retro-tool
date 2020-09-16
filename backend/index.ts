@@ -155,7 +155,7 @@ const createRetroSession = (sessionId: string) => {
       (event: PartialPick<Note, "ownedBy" | "content" | "secret">) => {
         const newNote = notes.createNote({
           ownedBy: user.id,
-          content: `crap\n // ${name} `,
+          content: `lorem ipsum\n // ${name} `,
           secret: true,
           ...event,
         });
