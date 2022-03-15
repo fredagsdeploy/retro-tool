@@ -16,7 +16,7 @@
     "@types/tinycolor2": "^1.4.2",
     "@types/uuid": "^7.0.2",
     "@xstate/react": "0.8.1",
-    "lodash-es": "^4.17.15",
+    "lodash-es": "^4.17.21",
     "react": "^16.13.1",
     "react-dnd": "10.0.2",
     "react-dnd-html5-backend": "10.0.2",
